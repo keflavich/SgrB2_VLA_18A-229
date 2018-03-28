@@ -1,0 +1,65 @@
+basefn = '18A-229.sb35058339.eb35204985.58184.437571539354'
+split(vis='{0}.ms'.format(basefn),
+      outputvis='{0}.corrected.ms'.format(basefn),
+      datacolumn='corrected')
+
+
+applycal(gaintable=['../recal/phase_refea21_withpipe_A1C1_18A-229_2018_03_07_T13.cal',
+                    '../recal/phase_refea21_withpipe_A2C2_18A-229_2018_03_07_T13.cal',
+                    '../recal/phase_refea21_withpipe_B1D1_18A-229_2018_03_07_T13.cal',
+                    '../recal/phase_refea21_withpipe_B2D2_18A-229_2018_03_07_T13.cal',
+                   ],
+         vis='{0}.corrected.ms'.format(basefn),
+         applymode='calflagstrict', antenna='*&*',
+         spwmap=[[0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                ],
+         parang=True)
+
+applycal(gaintable=[
+'phase_refea21_withpipe_A1C1_18A-229_2018_03_02_T23_60ssolint.cal/',
+'phase_refea21_withpipe_A2C2_18A-229_2018_03_02_T23_60ssolint.cal/',
+'phase_refea21_withpipe_B1D1_18A-229_2018_03_02_T23_60ssolint.cal/',
+'phase_refea21_withpipe_B2D2_18A-229_2018_03_02_T23_60ssolint.cal/',
+                   ],
+         vis='{0}.corrected.ms'.format(basefn),
+         applymode='calonly', antenna='*&*',
+         spwmap=[[0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                ],
+         parang=True)
+
+applycal(flagbackup=False,
+         gainfield=['']*11,
+         interp=['', '', '', '', '', 'linear,nearestflag', '', 'linearPD', 'linearPD', 'linearPD', 'linearPD'],
+         gaintable=['18A-229.sb35058339.eb35183211.58179.45517583333.ms.hifv_priorcals.s5_3.gc.tbl',
+                    '18A-229.sb35058339.eb35183211.58179.45517583333.ms.hifv_priorcals.s5_4.opac.tbl',
+                    '18A-229.sb35058339.eb35183211.58179.45517583333.ms.hifv_priorcals.s5_5.rq.tbl',
+                    '18A-229.sb35058339.eb35183211.58179.45517583333.ms.hifv_priorcals.s5_7.ants.tbl',
+                    '18A-229.sb35058339.eb35183211.58179.45517583333.ms.finaldelay.k',
+                    '18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalBPcal.b',
+                    #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.averagephasegain.g',
+                    '18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalampgaincal.g',
+                    #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalphasegaincal.g',
+                    'phase_refea21_withpipe_A1C1_18A-229_2018_03_02_T23_60ssolint.cal/',
+                    'phase_refea21_withpipe_A2C2_18A-229_2018_03_02_T23_60ssolint.cal/',
+                    'phase_refea21_withpipe_B1D1_18A-229_2018_03_02_T23_60ssolint.cal/',
+                    'phase_refea21_withpipe_B2D2_18A-229_2018_03_02_T23_60ssolint.cal/',
+                   ],
+         calwt=[False]*11,
+         vis='18A-229.sb35058339.eb35183211.58179.45517583333.ms',
+         applymode='calonly', antenna='*&*',
+         spwmap=[[], [], [], [], [],
+                 [], [], #[], [],
+                 # mine below:
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                 [0, 1,]+[2]*15+[17]*16+[33]*16+[49]*16,
+                ],
+         parang=True)
+
