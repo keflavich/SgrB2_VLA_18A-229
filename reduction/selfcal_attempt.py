@@ -1,7 +1,18 @@
 import os
+#import runpy
+#runpy.run_path('continuum_imaging_general.py')
+import sys
+sys.path.append('.')
+from continuum_imaging_general import myclean, tclean, makefits
+
+from tclean_cli import tclean_cli as tclean
+from flagdata_cli import flagdata_cli as flagdata
+from ft_cli import ft_cli as ft
+from gaincal_cli import gaincal_cli as gaincal
+from applycal_cli import applycal_cli as applycal
 
 mses = [
-'18A-229_2018_03_02_T23_06_49.534/18A-229.sb35058339.eb35183211.58179.45517583333.ms',
+# (already done) '18A-229_2018_03_02_T23_06_49.534/18A-229.sb35058339.eb35183211.58179.45517583333.ms',
 '18A-229_2018_03_03_T15_27_35.951/18A-229.sb35058339.eb35189568.58180.4553891088.ms',
 '18A-229_2018_03_05_T15_05_28.584/18A-229.sb35065347.eb35195562.58182.447515127315.ms',
 ##Ka '18A-229_2018_03_05_T15_05_30.260/18A-229.sb35040205.eb35195564.58182.530614965275.ms',
@@ -25,8 +36,13 @@ for ms in mses:
 
     ms = '../'+ms
 
+    flagdata(vis=ms, mode='unflag',
+             field=('J1744-3116,Sgr B2 N Q,Sgr B2 NM Q,SgrB2 MS Q,'
+                    'Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'))
+    flagdata(vis=ms, mode='manual', autocorr=True)
+
     ft(vis=ms,
-       field='Sgr B2 NM Q,Sgr B2 MS Q',
+       field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
        spw='',
        model='../reduction_scripts/DePree_NM_regridNM.image',
        nterms=1)
@@ -40,22 +56,20 @@ for ms in mses:
     #      field='J1744-3116',
     #      timebin='5s',)
 
-    #flagdata(vis=ms, mode='unflag', field='J1744-3116')
-    #flagdata(vis=splitvis, mode='manual', autocorr=True)
+    pipeline_tables = [ms+'.hifv_priorcals.s5_5.rq.tbl',
+                       ms+'.hifv_priorcals.s5_7.ants.tbl',
+                       ms+'.hifv_priorcals.s5_3.gc.tbl',
+                       ms+'.hifv_priorcals.s5_4.opac.tbl',
+                       ms+'.finaldelay.k',
+                       ms+'.finalBPcal.b',
+                       #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.averagephasegain.g',
+                       #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalphasegaincal.g',
+                       ms+'.finalampgaincal.g',
+                      ]
 
     caltable_nocombine = 'sgrb2m_selfcal_phase_refFLEX_withpipe_{0}_{1}_30ssolint_shortbaselines.cal'.format('nocombine', name)
 
     if not os.path.exists(caltable_nocombine):
-        pipeline_tables = [ms+'.hifv_priorcals.s5_5.rq.tbl',
-                           ms+'.hifv_priorcals.s5_7.ants.tbl',
-                           ms+'.hifv_priorcals.s5_3.gc.tbl',
-                           ms+'.hifv_priorcals.s5_4.opac.tbl',
-                           ms+'.finaldelay.k',
-                           ms+'.finalBPcal.b',
-                           #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.averagephasegain.g',
-                           #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalphasegaincal.g',
-                           ms+'.finalampgaincal.g',
-                          ]
 
         gaintables = [x for x in pipeline_tables if os.path.exists(x)]
         gainfield = ['' for x in pipeline_tables if os.path.exists(x)]
@@ -82,17 +96,6 @@ for ms in mses:
             caltable = 'sgrb2m_selfcal_phase_refFLEX_withpipe_{0}_{1}_30ssolint_shortbaselines.cal'.format(bb, name)
 
             if not os.path.exists(caltable):
-                pipeline_tables = [ms+'.hifv_priorcals.s5_5.rq.tbl',
-                                   ms+'.hifv_priorcals.s5_7.ants.tbl',
-                                   ms+'.hifv_priorcals.s5_3.gc.tbl',
-                                   ms+'.hifv_priorcals.s5_4.opac.tbl',
-                                   ms+'.finaldelay.k',
-                                   ms+'.finalBPcal.b',
-                                   #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.averagephasegain.g',
-                                   #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalphasegaincal.g',
-                                   ms+'.finalampgaincal.g',
-                                  ]
-
                 gaintables = [x for x in pipeline_tables if os.path.exists(x)]
                 gainfield = ['' for x in pipeline_tables if os.path.exists(x)]
                 interp = ['linear,nearestflag' if 'BPcal' in x else '' for x in pipeline_tables if os.path.exists(x)]
@@ -131,3 +134,11 @@ for ms in mses:
              antenna='*&*',
              spwmap=spwmap,
              parang=True)
+
+    myclean(vis=ms,
+            name=name+'_taper',
+            imsize=2000,
+            cell='0.04arcsec',
+            fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q'],
+            uvrange='0~2000klambda',
+            threshold='5mJy',)

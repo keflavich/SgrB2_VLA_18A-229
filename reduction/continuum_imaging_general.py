@@ -3,6 +3,10 @@ import datetime
 import os
 import glob
 
+from tclean_cli import tclean_cli as tclean
+from impbcor_cli import impbcor_cli as impbcor
+from exportfits_cli import exportfits_cli as exportfits
+
 def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image.tt0', pbimage=myimagebase+'.pb.tt0', outfile=myimagebase+'.image.tt0.pbcor', overwrite=True) # perform PBcorr
     exportfits(imagename=myimagebase+'.image.tt0.pbcor', fitsimage=myimagebase+'.image.tt0.pbcor.fits', dropdeg=True, overwrite=True) # export the corrected image
@@ -40,25 +44,26 @@ def myclean(
                      .format(name=name, field=field.replace(" ","_"),
                              robust=robust, threshold=threshold)
                     )
-        tclean(vis=vis,
-               field=field,
-               spw=spws,
-               imsize=[imsize, imsize],
-               cell=cell,
-               imagename=imagename,
-               niter=niter,
-               threshold=threshold,
-               robust=robust,
-               gridder='standard',
-               deconvolver='mtmfs',
-               specmode='mfs',
-               nterms=2,
-               weighting='briggs',
-               pblimit=0.2,
-               interactive=False,
-               outframe='LSRK',
-               datacolumn='corrected',
-               savemodel=savemodel,
-               **kwargs
-              )
-        makefits(imagename)
+        if not os.path.exists(imagename+".image.tt0.pbcor.fits"):
+            tclean(vis=vis,
+                   field=field,
+                   spw=spws,
+                   imsize=[imsize, imsize],
+                   cell=cell,
+                   imagename=imagename,
+                   niter=niter,
+                   threshold=threshold,
+                   robust=robust,
+                   gridder='standard',
+                   deconvolver='mtmfs',
+                   specmode='mfs',
+                   nterms=2,
+                   weighting='briggs',
+                   pblimit=0.2,
+                   interactive=False,
+                   outframe='LSRK',
+                   datacolumn='corrected',
+                   savemodel=savemodel,
+                   **kwargs
+                  )
+            makefits(imagename)
