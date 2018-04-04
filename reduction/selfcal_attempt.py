@@ -62,8 +62,8 @@ for ms in mses:
                        ms+'.hifv_priorcals.s5_4.opac.tbl',
                        ms+'.finaldelay.k',
                        ms+'.finalBPcal.b',
-                       #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.averagephasegain.g',
-                       #'18A-229.sb35058339.eb35183211.58179.45517583333.ms.finalphasegaincal.g',
+                       #ms+'.averagephasegain.g',
+                       #ms+'.finalphasegaincal.g',
                        ms+'.finalampgaincal.g',
                       ]
 

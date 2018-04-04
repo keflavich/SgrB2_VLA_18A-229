@@ -1,7 +1,11 @@
-
 import datetime
 import os
 import glob
+
+from tclean_cli import tclean_cli as tclean
+from impbcor_cli import impbcor_cli as impbcor
+from exportfits_cli import exportfits_cli as exportfits
+
 
 def makefits(myimagebase, cleanup=True):
     impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -69,3 +73,41 @@ def siov2clean(vis, name, **kwargs):
 
 def ch3ohmaserclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='CH3OH44.1', spws="50", **kwargs)
+
+def ch3ohthermalclean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='CH3OH48.4', spws="20", **kwargs)
+
+def csclean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='CS1-0', spws="26", **kwargs)
+
+def ch3ohKamaserclean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='CH3OH36.1', spws="11",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+def so10clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='SO10_01', spws="56",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+#  3      EVLA_Q#A1C1#3     128   TOPO   46111.536        62.500      8000.0  46115.5046       10  RR  LL NH3 18-18
+#  10     EVLA_Q#A1C1#10    128   TOPO   46982.796        62.500      8000.0  46986.7650       10  RR  LL PN 1-0
+#  19     EVLA_Q#A2C2#19    256   TOPO   48269.070        62.500     16000.0  48277.0387       11  RR  LL H2CO 413-414
+#  20     EVLA_Q#A2C2#20    512   TOPO   48351.181        62.500     32000.0  48367.1502       11  RR  LL CH3OH 101-000
+#  26     EVLA_Q#A2C2#26    128   TOPO   48999.378       125.000     16000.0  49007.3158       11  RR  LL CS 1-0
+#  32     EVLA_Q#A2C2#32    128   TOPO   49821.915       125.000     16000.0  49829.8525       11  RR  LL NH3 19-19
+#  37     EVLA_Q#B1D1#37    128   TOPO   42504.779       125.000     16000.0  42512.7170       13  RR  LL SiO v=3
+#  39     EVLA_Q#B1D1#39    512   TOPO   42805.924        31.250     16000.0  42813.9086       13  RR  LL SiO v=2
+#  40     EVLA_Q#B1D1#40    128   TOPO   42825.271       125.000     16000.0  42833.2082       13  RR  LL NH3 17-17
+#  42     EVLA_Q#B1D1#42    512   TOPO   43107.389        31.250     16000.0  43115.3733       13  RR  LL SiO v=1
+#  45     EVLA_Q#B1D1#45    256   TOPO   43401.088       125.000     32000.0  43417.0256       13  RR  LL SiO v=0
+#  50     EVLA_Q#B2D2#50    256   TOPO   44049.752       125.000     32000.0  44065.6892       14  RR  LL CH3OH maser
+#  61     EVLA_Q#B2D2#61    512   TOPO   45395.577       125.000     64000.0  45427.5143       14  RR  LL H52a
+#
+#  2      EVLA_KA#A1C1#2     256   TOPO   35120.882        62.500     16000.0  35128.8504       10  RR  LL NH3 14-14
+#  11     EVLA_KA#A1C1#11    512   TOPO   36155.702        31.250     16000.0  36163.6861       10  RR  LL CH3OH 4(-1,4)-3(0,3)
+#  12     EVLA_KA#A1C1#12    512   TOPO   36259.894        62.500     32000.0  36275.8624       10  RR  LL NH3 19(18) + CH3CN 2-1
+#  18     EVLA_KA#A2C2#18    256   TOPO   33143.717        62.500     16000.0  33151.6859       11  RR  LL NH3 13-13
+#  26     EVLA_KA#A2C2#26    256   TOPO   34114.159        62.500     16000.0  34122.1279       11  RR  LL NH3 18(17)
+#  36     EVLA_KA#B1D1#36    256   TOPO   31412.085        62.500     16000.0  31420.0535       13  RR  LL NH3 12-12
+#  42     EVLA_KA#B1D1#42    256   TOPO   32206.209        62.500     16000.0  32214.1778       13  RR  LL NH3 17(16)
+#  56     EVLA_KA#B2D2#56    256   TOPO   29988.912        62.500     16000.0  29996.8804       14  RR  LL SO 10-01
+#  61     EVLA_KA#B2D2#61    256   TOPO   30524.706        62.500     16000.0  30532.6751       14  RR  LL NH3 16(15)
