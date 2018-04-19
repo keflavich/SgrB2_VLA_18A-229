@@ -1,3 +1,6 @@
+"""
+Functions for imaging the masers and other lines
+"""
 import datetime
 import os
 import glob
@@ -36,6 +39,10 @@ def myclean(
     savemodel='none',
     **kwargs
 ):
+    if hasattr(spws, 'items'):
+        assert not isinstance(vis, str)
+        spws = [spws[k] for k in vis]
+
     for field in fields:
         imagename = ("{name}_{field}_r{robust}_{linename}_clean1e4_{threshold}"
                      .format(name=name, field=field.replace(" ","_"),
@@ -65,6 +72,7 @@ def myclean(
               )
         makefits(imagename)
 
+# Q-band
 def siov1clean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='SiOv=1', spws="42", **kwargs)
 
@@ -80,6 +88,8 @@ def ch3ohthermalclean(vis, name, **kwargs):
 def csclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='CS1-0', spws="26", **kwargs)
 
+
+# Ka-band
 def ch3ohKamaserclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='CH3OH36.1', spws="11",
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
@@ -87,6 +97,16 @@ def ch3ohKamaserclean(vis, name, **kwargs):
 def so10clean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='SO10_01', spws="56",
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+# K-band
+def h2oclean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='H2O', spws={'../18A-229_2018_03_29_T13_19_55.276/18A-229.sb35069722.eb35251855.58206.45698415509.ms': '55',
+                                                             '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms': '53',
+                                                            },
+                   cell='0.1arcsec',
+                   imsize=1000, 
+                   chanchunks=16,
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
 
 #  3      EVLA_Q#A1C1#3     128   TOPO   46111.536        62.500      8000.0  46115.5046       10  RR  LL NH3 18-18
 #  10     EVLA_Q#A1C1#10    128   TOPO   46982.796        62.500      8000.0  46986.7650       10  RR  LL PN 1-0
@@ -111,3 +131,29 @@ def so10clean(vis, name, **kwargs):
 #  42     EVLA_KA#B1D1#42    256   TOPO   32206.209        62.500     16000.0  32214.1778       13  RR  LL NH3 17(16)
 #  56     EVLA_KA#B2D2#56    256   TOPO   29988.912        62.500     16000.0  29996.8804       14  RR  LL SO 10-01
 #  61     EVLA_KA#B2D2#61    256   TOPO   30524.706        62.500     16000.0  30532.6751       14  RR  LL NH3 16(15)
+#
+# 18A-229_2018_03_29_T13_19_55.276/18A-229.sb35069722.eb35251855.58206.45698415509.ms
+#  2      EVLA_K#A1C1#2     256   TOPO   22776.698        31.250      8000.0  22780.6827       10  RR  LL
+#  3      EVLA_K#A1C1#3     256   TOPO   22824.698        31.250      8000.0  22828.6827       10  RR  LL
+#  4      EVLA_K#A1C1#4     256   TOPO   23092.810        31.250      8000.0  23096.7945       10  RR  LL
+#  5      EVLA_K#A1C1#5     128   TOPO   23651.365        62.500      8000.0  23655.3336       10  RR  LL
+#  6      EVLA_K#A1C1#6     256   TOPO   23684.359        62.500     16000.0  23692.3282       10  RR  LL
+#  7      EVLA_K#A1C1#7     256   TOPO   23712.486        62.500     16000.0  23720.4549       10  RR  LL
+#  12     EVLA_K#A1C1#12    128   TOPO   24129.187       125.000     16000.0  24137.1242       10  RR  LL
+#  16     EVLA_K#A1C1#16    256   TOPO   24522.710        62.500     16000.0  24530.6788       10  RR  LL
+#  26     EVLA_K#A2C2#26    256   TOPO   25704.857        62.500     16000.0  25712.8254       11  RR  LL
+#  48     EVLA_K#B2D2#48    128   TOPO   21279.407        62.500      8000.0  21283.3758       14  RR  LL
+#  55     EVLA_K#B2D2#55   3072   TOPO   22225.099         5.208     16000.0  22233.0969       14  RR  LL H2O, presumably....
+#  58     EVLA_K#B2D2#58    128   TOPO   22646.992        62.500      8000.0  22650.9607       14  RR  LL
+#
+# 18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms
+#  2      EVLA_K#A1C1#2     256   TOPO   22824.717        31.250      8000.0  22828.7011       10  RR  LL
+#  3      EVLA_K#A1C1#3     256   TOPO   23092.828        31.250      8000.0  23096.8128       10  RR  LL
+#  4      EVLA_K#A1C1#4     256   TOPO   23684.378        62.500     16000.0  23692.3466       10  RR  LL
+#  5      EVLA_K#A1C1#5     256   TOPO   23712.504        62.500     16000.0  23720.4732       10  RR  LL
+#  10     EVLA_K#A1C1#10    128   TOPO   24129.205       125.000     16000.0  24137.1426       10  RR  LL
+#  14     EVLA_K#A1C1#14    256   TOPO   24522.728        62.500     16000.0  24530.6972       10  RR  LL
+#  24     EVLA_K#A2C2#24    256   TOPO   25704.876        62.500     16000.0  25712.8444       11  RR  LL
+#  46     EVLA_K#B2D2#46    128   TOPO   21279.424        62.500      8000.0  21283.3930       14  RR  LL
+#  53     EVLA_K#B2D2#53   3072   TOPO   22225.117         5.208     16000.0  22233.1141       14  RR  LL # h2o
+#  56     EVLA_K#B2D2#56    128   TOPO   22647.009        62.500      8000.0  22650.9779       14  RR  LL

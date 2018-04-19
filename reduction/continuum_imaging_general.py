@@ -1,3 +1,7 @@
+"""
+Tools (functions) for continuum imaging.
+Not a standalone script; meant to be imported.
+"""
 
 import datetime
 import os

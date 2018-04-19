@@ -1,3 +1,8 @@
+"""
+These are one-off, copy-and-paste commands from when I was attempting to
+improve the calibration using the phase calibrator.
+This isn't a script that should be run
+"""
 
 # '/lustre/aginsbur/sgrb2/18A-229/18A-229_2018_03_02_T23_06_49.534'
 

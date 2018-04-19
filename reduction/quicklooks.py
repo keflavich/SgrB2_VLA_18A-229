@@ -11,12 +11,12 @@ from spectral_cube import SpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 
 for fn in glob.glob("*.image.pbcor.fits"):
-    if fits.getheader(fn)['NAXIS'] <= 2:
-        print("Skipped {0} because it wasn't a cube".format(fn))
-        continue
-    if os.path.exists('collapse/argmax/{0}'.format(fn.replace(".image.pbcor.fits","_vmax.fits"))):
-        print("Skipped {0} because it is done".format(fn))
-        continue
+    #if fits.getheader(fn)['NAXIS'] <= 2:
+    #    print("Skipped {0} because it wasn't a cube".format(fn))
+    #    continue
+    #if os.path.exists('collapse/argmax/{0}'.format(fn.replace(".image.pbcor.fits","_vmax.fits"))):
+    #    print("Skipped {0} because it is done".format(fn))
+    #    continue
 
     cube = SpectralCube.read(fn)
     cube.beam_threshold = 1
@@ -45,6 +45,20 @@ for fn in glob.glob("*.image.pbcor.fits"):
     mx.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max.fits")),
              overwrite=True)
     mx.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max.png")))
+
+    sn_mask = mxspec / stdspec > 5
+    if any(sn_mask):
+        mcube_sn = mcube.with_mask(sn_mask[:,None,None])
+        mx_masked = mcube_sn.max(axis=0, how='slice')
+        mx_masked_K = (mx_masked*u.beam).to(u.K,
+                                            u.brightness_temperature(beam_area=beam,
+                                                                     disp=mcube_sn.with_spectral_unit(u.GHz).spectral_axis.mean()))
+        mx_masked_K.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked_K.fits")),
+                   overwrite=True)
+        mx_masked_K.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked_K.png")))
+        mx_masked.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked.fits")),
+                 overwrite=True)
+        mx_masked.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked.png")))
 
     argmax = mcube.argmax(axis=0, how='ray')
     hdu = mx.hdu

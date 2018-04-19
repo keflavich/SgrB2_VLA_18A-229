@@ -1,3 +1,10 @@
+"""
+Extract the calibration tables from the pipeline runs.
+
+These tables are used for re-calibrating the data with selfcal.  Everything, or
+everything except the phase calibration, will be applied, then self-cal will be
+used (phase-only) to get the best phase solutions.
+"""
 import glob
 import tarfile
 import os
