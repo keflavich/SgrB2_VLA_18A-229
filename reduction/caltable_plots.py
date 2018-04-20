@@ -1,6 +1,8 @@
 import numpy as np
 import pylab as pl
 from astropy import table
+from matplotlib.patches import Rectangle
+from matplotlib.collections import PatchCollection
 
 tbl = table.Table.read('calibrator_data.txt', format='ascii.ipac')
 
@@ -42,3 +44,39 @@ for jd in np.unique(tbl['JD']):
 
     pl.legend(loc='best')
     pl.savefig('calplots/{0}_{1}.png'.format(jd, band))
+
+
+# make a grid showing which SB was observed when
+qmask = tbl['BandName'] == 'Q'
+qtbl = tbl[qmask]
+
+jds = np.unique(qtbl['JD'])
+spws = np.unique(qtbl['spw'])
+
+rectangles = []
+
+for ii,jd in enumerate(jds):
+    jdmask = qtbl['JD'] == jd
+
+    dtbl = qtbl[jdmask]
+
+    for frq,bw in zip(dtbl['freq'], dtbl['bw']/1e3):
+        rectangles.append(Rectangle([frq-bw/2, jd], width=bw,
+                                    height=0.75,
+                                    #height=2/24.,
+                                    linewidth=1,
+                                    linestyle='solid',
+                                    facecolor=(0,0.1,1,0.5), edgecolor='k', ec='k'))
+
+fig = pl.figure(2)
+fig.clf()
+ax = fig.gca()
+ax.add_collection(PatchCollection(rectangles, edgecolors=(0,0,0,0.5),
+                                  linewidths=0.5, facecolor=(0,0.3,1.0,0.25),
+                                  alpha=0.5))
+
+ax.axis([42000, 50000, jds.min()-1, jds.max()+3])
+ax.set_xlabel("Frequency")
+ax.set_ylabel("Julian date")
+
+pl.savefig("frequency_coverage_Q.png")

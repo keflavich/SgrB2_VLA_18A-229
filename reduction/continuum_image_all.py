@@ -5,6 +5,12 @@ from continuum_imaging_general import myclean, tclean, makefits
 
 from continuum_windows import Qmses, Kamses, Kmses
 
+myclean(['../'+x for x in Qmses],
+        name='18A-229_combined',
+        threshold='5mJy',
+        spws=[x for x in Qmses.values()],
+       )
+
 myclean(['../'+x for x in Kamses],
         name='18A-229_combined',
         threshold='5mJy',
@@ -21,11 +27,6 @@ myclean(['../'+x for x in Kmses],
         spws=[x for x in Kmses.values()],
        )
 
-#myclean(['../'+x for x in Qmses],
-#        name='18A-229_combined',
-#        threshold='5mJy',
-#        spws=[x for x in Qmses.values()],
-#       )
 
 
 
