@@ -6,7 +6,7 @@ context.set_state('ProjectSummary', 'telescope', 'EVLA')
 context.set_state('ProjectSummary', 'piname', 'Adam Ginsburg')
 context.set_state('ProjectSummary', 'proposal_title', 'Sgr B2 18A-229')
 try:
-    hifv_importdata(vis=['18A-229.sb35058339.eb35183211.58179.45517583333.ms'], session=['session_1'])
+    hifv_importdata(vis=['18A-229.sb35040205.eb35195564.58182.530614965275.ms'], session=['session_1'])
     #hifv_hanning(pipelinemode="automatic")
     hifv_flagdata(intents='*POINTING*,*FOCUS*,*ATMOSPHERE*,*SIDEBAND_RATIO*, *UNKNOWN*, *SYSTEM_CONFIGURATION*, *UNSPECIFIED#UNSPECIFIED*', hm_tbuff='1.5int')
     hifv_vlasetjy(pipelinemode="automatic")

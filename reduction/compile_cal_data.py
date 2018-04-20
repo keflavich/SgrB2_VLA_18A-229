@@ -38,7 +38,7 @@ for directory, dirnames, filenames in os.walk('.'):
         all_data[msname] = data, spws, bws, band, bbs, fields_table
         #print(directory, msname, band)
 
-titles = ['JD', 'BandName', 'FieldID', 'spw', 'freq', 'bw', 'peak', 'rms']
+titles = ['JD', 'BandName', 'FieldID', 'spw', 'freq', 'bw', 'peak', 'rms', 'msname']
 rows = []
 
 for msname in all_data:
@@ -48,7 +48,7 @@ for msname in all_data:
         band = all_data[msname][3]
         spws = all_data[msname][1]
         bws = all_data[msname][2]
-        row = [jd, band, field, spw, spws[spw], bws[spw], mx, rms]
+        row = [jd, band, field, spw, spws[spw], bws[spw], mx, rms, msname]
         rows.append(row)
 
 tbl = Table(rows=rows, names=titles)

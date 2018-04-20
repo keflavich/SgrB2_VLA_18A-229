@@ -5,8 +5,9 @@ context.set_state('ProjectSummary', 'observatory', 'Karl G. Jansky Very Large Ar
 context.set_state('ProjectSummary', 'telescope', 'EVLA')
 context.set_state('ProjectSummary', 'piname', 'Adam Ginsburg')
 context.set_state('ProjectSummary', 'proposal_title', 'Sgr B2 18A-229')
+flagdata(vis='18A-229.sb35065347.eb35195562.58182.447515127315.ms', mode='unflag')
 try:
-    hifv_importdata(vis=['18A-229.sb35058339.eb35183211.58179.45517583333.ms'], session=['session_1'])
+    hifv_importdata(vis=['18A-229.sb35065347.eb35195562.58182.447515127315.ms'], session=['session_1'])
     #hifv_hanning(pipelinemode="automatic")
     hifv_flagdata(intents='*POINTING*,*FOCUS*,*ATMOSPHERE*,*SIDEBAND_RATIO*, *UNKNOWN*, *SYSTEM_CONFIGURATION*, *UNSPECIFIED#UNSPECIFIED*', hm_tbuff='1.5int')
     hifv_vlasetjy(pipelinemode="automatic")
