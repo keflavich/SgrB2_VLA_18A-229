@@ -3,6 +3,9 @@ import numpy as np
 def check_intents(vis,
                   bad_intent='CALIBRATE_BANDPASS#UNSPECIFIED,CALIBRATE_FLUX#UNSPECIFIED',
                   replacement_intent='CALIBRATE_FLUX#UNSPECIFIED'):
+    """
+    Search for Jethro Tull
+    """
 
     tb.open(vis+"/STATE", nomodify=False)
 
@@ -12,9 +15,10 @@ def check_intents(vis,
 
     match = obs_mode == bad_intent
     if not match.any():
-        raise ValueError("No matches to intent {0} found.".format(bad_intent))
+        print("No matches to intent {0} found.".format(bad_intent))
+        #raise ValueError("No matches to intent {0} found.".format(bad_intent))
 
-    state_id_nums = np.where(match)
+    bad_state_id_nums = np.where(match)
 
     tb.open(vis)
     state_id_data = tb.getcol('STATE_ID')
@@ -22,7 +26,7 @@ def check_intents(vis,
     tb.close()
 
     field_ids = []
-    for idnum in state_id_nums:
+    for idnum in bad_state_id_nums:
         match = state_id_data == idnum
         field_ids += list(np.unique(field_id_data[match]))
 
@@ -30,9 +34,11 @@ def check_intents(vis,
     fieldnames = tb.getcol("NAME")
     tb.close()
 
-    matched_fields = {fid:fieldnames[fid] for fid in field_ids}
+    matched_fields_badintents = {fid:fieldnames[fid] for fid in field_ids}
 
-    return matched_fields
+    field_intents = {fieldnames[fid]:obs_mode[sid] for fid,sid in zip(field_id_data, state_id_data)}
+
+    return matched_fields_badintents, field_intents
 
 
 def fix_intents(vis,

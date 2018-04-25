@@ -7,7 +7,11 @@ context.set_state('ProjectSummary', 'piname', 'Adam Ginsburg')
 context.set_state('ProjectSummary', 'proposal_title', 'Sgr B2 18A-229')
 flagdata(vis='18A-229.sb35065347.eb35195562.58182.447515127315.ms', mode='unflag')
 try:
-    hifv_importdata(vis=['18A-229.sb35065347.eb35195562.58182.447515127315.ms'], session=['session_1'])
+    vis='18A-229.sb35065347.eb35195562.58182.447515127315.ms'
+    clearcal(vis=vis)
+    listobs(vis=vis, listfile=vis+".listobs.beforeimport", overwrite=True)
+    hifv_importdata(vis=[vis], session=['session_1'])
+    listobs(vis=vis, listfile=vis+".listobs.afterimport", overwrite=True)
     #hifv_hanning(pipelinemode="automatic")
     hifv_flagdata(intents='*POINTING*,*FOCUS*,*ATMOSPHERE*,*SIDEBAND_RATIO*, *UNKNOWN*, *SYSTEM_CONFIGURATION*, *UNSPECIFIED#UNSPECIFIED*', hm_tbuff='1.5int')
     hifv_vlasetjy(pipelinemode="automatic")

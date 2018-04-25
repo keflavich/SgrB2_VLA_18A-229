@@ -6,7 +6,11 @@ context.set_state('ProjectSummary', 'telescope', 'EVLA')
 context.set_state('ProjectSummary', 'piname', 'Adam Ginsburg')
 context.set_state('ProjectSummary', 'proposal_title', 'Sgr B2 18A-229')
 try:
-    hifv_importdata(vis=['18A-229.sb35058339.eb35189568.58180.4553891088.ms'], session=['session_1'])
+    vis = '18A-229.sb35065347.eb35201827.58183.43683233796.ms'
+    clearcal(vis=vis)
+    listobs(vis=vis, listfile=vis+".listobs.beforeimport", overwrite=True)
+    hifv_importdata(vis=[vis], session=['session_1'])
+    listobs(vis=vis, listfile=vis+".listobs.afterimport", overwrite=True)
     #hifv_hanning(pipelinemode="automatic")
     hifv_flagdata(intents='*POINTING*,*FOCUS*,*ATMOSPHERE*,*SIDEBAND_RATIO*, *UNKNOWN*, *SYSTEM_CONFIGURATION*, *UNSPECIFIED#UNSPECIFIED*', hm_tbuff='1.5int')
     hifv_vlasetjy(pipelinemode="automatic")
@@ -25,7 +29,7 @@ try:
     hifv_targetflag(intents='*CALIBRATE*')
     #hifv_statwt(pipelinemode="automatic")
     hifv_plotsummary(pipelinemode="automatic")
-    hif_makeimlist(intent='PHASE,BANDPASS')
+    hif_makeimlist(intent='PHASE,BANDPASS,TARGET')
     hif_makeimages(hm_masking='none')
 finally:
     h_save()
