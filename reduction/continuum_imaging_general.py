@@ -49,7 +49,7 @@ def myclean(
                              robust=robust, threshold=threshold)
                     )
         if not os.path.exists(imagename+".image.tt0.pbcor.fits"):
-            tclean(vis=vis,
+            rslt = tclean(vis=vis,
                    field=field,
                    spw=spws,
                    imsize=[imsize, imsize],

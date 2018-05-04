@@ -9,7 +9,7 @@ for ms in Qmses:
     myclean('../'+ms,
             name=ms[:22],
             threshold='5mJy',
-            spws=[x for x in Qmses.values()],
+            spws=Qmses[ms],
             niter=1000,
             imsize=2000,
             cell='0.04arcsec',
@@ -23,7 +23,7 @@ for ms in Kamses:
             niter=1000,
             imsize=2000,
             fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka', 'Sgr B2 S Ka', 'Sgr B2 DS1 Ka', 'Sgr B2 DS2 Ka'],
-            spws=[x for x in Kamses.values()],
+            spws=Kamses[ms],
            )
 
 for ms in Kmses:
@@ -33,7 +33,7 @@ for ms in Kmses:
             cell='0.08arcsec',
             imsize=2000,
             fields=['Sgr B2 MN K', 'Sgr B2 MS K', 'Sgr B2 SDS K',],
-            spws=[x for x in Kmses.values()],
+            spws=Kmses[ms],
            )
 
 
