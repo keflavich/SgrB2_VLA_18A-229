@@ -7,7 +7,7 @@ from continuum_windows import Qmses, Kamses, Kmses
 
 for ms in Qmses:
     myclean('../'+ms,
-            name=ms[:-3],
+            name=ms[:22],
             threshold='5mJy',
             spws=[x for x in Qmses.values()],
             niter=1000,
@@ -17,7 +17,7 @@ for ms in Qmses:
 
 for ms in Kamses:
     myclean('../'+ms,
-            name=ms[:-3],
+            name=ms[:22],
             threshold='5mJy',
             cell='0.05arcsec',
             niter=1000,
@@ -28,7 +28,7 @@ for ms in Kamses:
 
 for ms in Kmses:
     myclean('../'+ms,
-            name=ms[:-3],
+            name=ms[:22],
             threshold='5mJy',
             cell='0.08arcsec',
             imsize=2000,
