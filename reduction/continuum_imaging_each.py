@@ -1,6 +1,11 @@
 """
 Overall imaging script to make combined continuum images for Ka, Q, and K bands
 """
+import sys
+sys.path.append('.')
+
+print(sys.path)
+
 from continuum_imaging_general import myclean, tclean, makefits
 
 from continuum_windows import Qmses, Kamses, Kmses

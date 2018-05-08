@@ -5,9 +5,10 @@
 #clusterspec file for us in the WORK_DIR we specified in the configure file.
 
 cd ${WORK_DIR}
+echo ${WORK_DIR}
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
-xvfb-run -d casa-pipe --nogui --nologger -c "execfile('$SCRIPT_DIR/continuum_imaging_make_selfcal_model.py')"
+xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$WORK_DIR/continuum_imaging_make_selfcal_model.py')"
 
 #export CASAPATH=/home/casa/packages/RHEL6/release/casa-release-5.1.0-74
 #export PATH=${CASAPATH}/bin:$PATH

@@ -1,7 +1,11 @@
-
 """
 Overall imaging script to make combined continuum images for Ka, Q, and K bands
 """
+import sys
+sys.path.append('.')
+
+print(sys.path)
+
 from continuum_imaging_general import myclean, tclean, makefits
 
 from continuum_windows import Qmses, Kamses, Kmses
@@ -12,6 +16,29 @@ good_Q_mses = [
  '18A-229_2018_04_06_T14_19_50.811/18A-229.sb35258391.eb35276197.58214.498005057874.ms',
  '18A-229_2018_04_18_T13_19_53.878/18A-229.sb35258391.eb35349729.58226.46470898148.ms',
 ]
+
+# mosaic for Q-band
+tclean(vis=['../'+x for x in good_Q_mses],
+       field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+       spw=[Qmses[x] for x in good_Q_mses],
+       imsize=[12000,12000],
+       cell='0.01arcsec',
+       imagename='18A-229_mosaic_for_selfcal',
+       niter=10000,
+       threshold='2mJy',
+       robust=0.5,
+       gridder='mosaic',
+       deconvolver='mtmfs',
+       specmode='mfs',
+       nterms=2,
+       weighting='briggs',
+       pblimit=0.2,
+       interactive=False,
+       outframe='LSRK',
+       savemodel='none',
+      )
+
+
     
 myclean(['../'+x for x in good_Q_mses],
         name='18A-229_combined_for_selfcal',
