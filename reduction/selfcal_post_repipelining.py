@@ -116,3 +116,11 @@ for ms in mses:
              spwmap=[],
              parang=True)
 
+    myclean(vis=cont_ms,
+            name=name,
+            imsize=8000,
+            cell='0.01arcsec',
+            fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+            threshold='2mJy',
+            savemodel='modelcolumn',
+           )
