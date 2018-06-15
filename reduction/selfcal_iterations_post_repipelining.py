@@ -231,5 +231,72 @@ tclean(vis=cont_vis,
        savemodel='modelcolumn',
        scales=[0,3,9],
       )
-for nm in [imagename+'_M', imagename+'_N', imagename+"_Z", imagename+"_S"]:
-    makefits(nm, cleanup=False)
+makefits(imagename, cleanup=False)
+
+
+caltable = '18A-229_Q_concatenated_cal_iter3_20s'
+gaincal(vis=cont_vis,
+        caltable=caltable,
+        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+        calmode='p',
+        refant='',
+        solint='20s',
+        #uvrange='0~2000klambda',
+        minblperant=3,
+       )
+
+imagename = '18A-229_Q_mosaic_for_selfcal_iter4'
+tclean(vis=cont_vis,
+       imagename=imagename,
+       field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+       spw='',
+       mask=mask,
+       #outlierfile="outlierfile.txt",
+       imsize=[20000,20000],
+       phasecenter='J2000 17h47m19.523 -28d23m08.497',
+       cell='0.01arcsec',
+       niter=10000,
+       threshold='1mJy',
+       robust=0.5,
+       gridder='mosaic',
+       deconvolver='mtmfs',
+       specmode='mfs',
+       nterms=2,
+       weighting='briggs',
+       pblimit=0.2,
+       interactive=False,
+       outframe='LSRK',
+       savemodel='modelcolumn',
+       scales=[0,3,9],
+      )
+makefits(imagename, cleanup=False)
+
+
+# make some smaller diagnostic images
+msmd.open(cont_vis)
+summary = msmd.summary()
+msmd.close()
+for spw in np.unique(summary['spectral windows']['names']):
+    imagename = '18A-229_Q_M_for_selfcal_iter4_diagnostics_spw{0}'.format(spw)
+    tclean(vis=cont_vis,
+           imagename=imagename,
+           field="Sgr B2 NM Q,Sgr B2 MS Q",
+           spw=spw,
+           imsize=[500,500],
+           phasecenter='J2000 17h47m20.163 -28d23m04.680',
+           cell='0.01arcsec',
+           niter=1000,
+           threshold='1mJy',
+           robust=0.5,
+           gridder='standard',
+           deconvolver='multiscale',
+           specmode='mfs',
+           nterms=1,
+           weighting='briggs',
+           pblimit=0.2,
+           interactive=False,
+           outframe='LSRK',
+           savemodel='none',
+           scales=[0,3,9],
+          )
+    makefits(imagename, cleanup=False)
