@@ -1,4 +1,5 @@
 from taskinit import casac, tbtool
+import numpy as np
 
 tb = tbtool()
 
