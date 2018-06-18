@@ -1,4 +1,6 @@
+from taskinit import casac, tbtool
 
+tb = tbtool()
 
 def id_spw(vis, freq, min_chan=255):
     tb.open(vis+"/SPECTRAL_WINDOW")
@@ -20,6 +22,11 @@ def id_spws(vislist, freq):
 
 
 def get_spw_mapping(vis, caltable):
+    """
+    Obtain a spwmap mapping a calibration table to a specific observation using
+    the metadata in the measurement set and the caltable.  The returned spwmap
+    should be passable to `applycal`.
+    """
 
     tb.open(caltable+"/SPECTRAL_WINDOW")
     cal_freqs = tb.getcol('CHAN_FREQ')[0,:]
@@ -33,7 +40,7 @@ def get_spw_mapping(vis, caltable):
 
     tb.open(caltable)
     obsids = tb.getcol('OBSERVATION_ID')
-    obsfreqs = tb.getcol('CHAN_FREQ')
+    spw_ids = tb.getcol('SPECTRAL_WINDOW_ID')
     tb.close()
 
 
@@ -45,8 +52,9 @@ def get_spw_mapping(vis, caltable):
     assert obs_time[0] < calmidtimes[closest_cal] < obs_time[1]
 
     obs_match = obsids == closest_cal
+    spws_match = np.unique(spw_ids[obs_match])
 
-    obs_cal_freqs = cal_freqs[obs_match]
+    obs_cal_freqs = cal_freqs[spws_match]
 
     spwmap = []
 
