@@ -39,6 +39,7 @@ def myclean(
     threshold='25mJy',
     robust=0.5,
     savemodel='none',
+    overwrite=False,
     **kwargs
 ):
     if hasattr(spws, 'items'):
@@ -52,6 +53,9 @@ def myclean(
                              linename=linename,
                             )
                     )
+        if os.path.exists(imagename+".image.pbcor.fits") and not overwrite:
+            print("Skipping {0} because it's done".format(imagename))
+            continue
         tclean(vis=vis,
                field=field,
                spw=spws,
