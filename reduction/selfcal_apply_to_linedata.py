@@ -42,12 +42,15 @@ for ms in Qmses:
     #         calwt=[False], applymode='calonly', spwmap=spwmap, parang=True,)
 
     # with the pipeline tables
+    # (needed because the self-calibration was run against split continuum data,
+    # which had the pipeline calibrations applied)
     applycal(vis=vis,
              flagbackup=False,
-             gainfield=['']+gainfield,
-             interp=['linear,linear']+interp,
-             gaintable=[caltable]+pipeline_tables,
-             calwt=[False]+calwt,
+             gainfield=gainfield+[''],
+             interp=interp+['linear,linear'],
+             gaintable=pipeline_tables+[caltable],
+             calwt=calwt+[False],
              applymode='calonly',
-             spwmap=[spwmap]+spwmap_pipeline,
-             parang=True,)
+             spwmap=spwmap_pipeline+[spwmap],
+             parang=True,
+            )
