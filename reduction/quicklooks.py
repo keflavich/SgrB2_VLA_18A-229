@@ -38,7 +38,7 @@ for fn in glob.glob("*.image.pbcor.fits"):
     mx = mcube.max(axis=0, how='slice')
     beam = mcube.beam if hasattr(mcube, 'beam') else mcube.average_beams(1)
     mx_K = (mx*u.beam).to(u.K, u.brightness_temperature(beam_area=beam,
-                                                        disp=mcube.with_spectral_unit(u.GHz).spectral_axis.mean()))
+                                                        frequency=mcube.with_spectral_unit(u.GHz).spectral_axis.mean()))
     mx_K.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max_K.fits")),
                overwrite=True)
     mx_K.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max_K.png")))
@@ -52,7 +52,7 @@ for fn in glob.glob("*.image.pbcor.fits"):
         mx_masked = mcube_sn.max(axis=0, how='slice')
         mx_masked_K = (mx_masked*u.beam).to(u.K,
                                             u.brightness_temperature(beam_area=beam,
-                                                                     disp=mcube_sn.with_spectral_unit(u.GHz).spectral_axis.mean()))
+                                                                     frequency=mcube_sn.with_spectral_unit(u.GHz).spectral_axis.mean()))
         mx_masked_K.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked_K.fits")),
                    overwrite=True)
         mx_masked_K.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked_K.png")))
@@ -78,7 +78,7 @@ for fn in glob.glob("*.image.pbcor.fits"):
     mn = mcube.min(axis=0, how='slice')
     beam = mcube.beam if hasattr(mcube, 'beam') else mcube.average_beams(1)
     mn_K = (mn*u.beam).to(u.K, u.brightness_temperature(beam_area=beam,
-                                                        disp=mcube.with_spectral_unit(u.GHz).spectral_axis.mean()))
+                                                        frequency=mcube.with_spectral_unit(u.GHz).spectral_axis.mean()))
     mn_K.write('collapse/min/{0}'.format(fn.replace(".image.pbcor.fits","_min_K.fits")),
                overwrite=True)
     mn_K.quicklook('collapse/min/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_min_K.png")))
@@ -89,7 +89,7 @@ for fn in glob.glob("*.image.pbcor.fits"):
     #    beam = mcube.beam if hasattr(mcube, 'beam') else mcube.average_beams(1)
     #    pctmap_K = (pctmap*u.beam).to(u.K,
     #                                  u.brightness_temperature(beam_area=beam,
-    #                                                           disp=mcube.with_spectral_unit(u.GHz).spectral_axis.mean()))
+    #                                                           frequency=mcube.with_spectral_unit(u.GHz).spectral_axis.mean()))
     #    pctmap_K.write('collapse/percentile/{0}'.format(fn.replace(".image.pbcor.fits","_{0}pct_K.fits".format(pct))),
     #                   overwrite=True)
     #    pctmap_K.quicklook('collapse/percentile/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_{0}pct_K.png".format(pct))))

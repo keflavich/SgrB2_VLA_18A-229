@@ -20,6 +20,7 @@ for ms in Qmses:
 
     pipeline_tables = [vis+'.hifv_priorcals.s5_5.rq.tbl',
                        vis+'.hifv_priorcals.s5_7.ants.tbl',
+                       vis+'.hifv_priorcals.s4_6.swpow.tbl',
                        vis+'.hifv_priorcals.s5_3.gc.tbl',
                        vis+'.hifv_priorcals.s5_4.opac.tbl',
                        vis+'.finaldelay.k',
@@ -28,10 +29,14 @@ for ms in Qmses:
                        vis+'.finalphasegaincal.g',
                        vis+'.finalampgaincal.g',
                       ]
-    interp = ['', '', '', '', '', 'linear', '', '', '']
+    pipeline_tables = [x for x in pipeline_tables if os.path.exists(x)]
+    interp = ['linear' if 'finalBPcal' in x else '' for x in pipeline_tables]
     calwt = [False] * len(pipeline_tables)
     spwmap_pipeline = [[]]*len(pipeline_tables)
     gainfield = [''] * len(pipeline_tables)
+
+    for fn in pipeline_tables:
+        assert os.path.exists(fn)
 
     # 'linearperobs' doesn't work because we're not applying to the same MS
     # spwmap should just take care of that, though.
