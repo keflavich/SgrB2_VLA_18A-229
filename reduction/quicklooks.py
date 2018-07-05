@@ -18,6 +18,9 @@ for fn in glob.glob("*.image.pbcor.fits"):
     #    print("Skipped {0} because it is done".format(fn))
     #    continue
 
+    modcube = SpectralCube.read(fn.replace(".image.pbcor", ".model"))
+    modcube.beam_threshold=100000
+
     cube = SpectralCube.read(fn)
     cube.beam_threshold = 1
     #cube.allow_huge_operations = True
@@ -34,6 +37,9 @@ for fn in glob.glob("*.image.pbcor.fits"):
     mxspec = mcube.max(axis=(1,2), how='slice')
     mxspec.write("collapse/maxspec/{0}".format(fn.replace(".image.pbcor.fits", "_max_spec.fits")), overwrite=True)
     mxspec.quicklook("collapse/maxspec/pngs/{0}".format(fn.replace(".image.pbcor.fits", "_max_spec.png")))
+    mxmodspec = modcube.max(axis=(1,2), how='slice')
+    mxmodspec.write("collapse/maxspec/{0}".format(fn.replace(".image.pbcor.fits", "_max_model_spec.fits")), overwrite=True)
+    mxmodspec.quicklook("collapse/maxspec/pngs/{0}".format(fn.replace(".image.pbcor.fits", "_max_model_spec.png")))
 
     mx = mcube.max(axis=0, how='slice')
     beam = mcube.beam if hasattr(mcube, 'beam') else mcube.average_beams(1)

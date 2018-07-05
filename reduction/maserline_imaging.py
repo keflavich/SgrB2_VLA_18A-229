@@ -4,6 +4,8 @@ Functions for imaging the masers and other lines
 import datetime
 import os
 import glob
+import sys
+sys.path.append('.')
 
 from utilities import id_spws, id_spw
 
@@ -85,31 +87,31 @@ def siov1clean(vis, name, **kwargs):
         spws = id_spws(vis, freq=43.12203e9)
     else:
         spws = "42"
-    return myclean(vis=vis, name=name, linename='SiOv=1', spws=spws, **kwargs)
+    return myclean(vis=vis, name=name, linename='SiOv=1', spws=spws, chanchunks=8, **kwargs)
 
 def siov2clean(vis, name, **kwargs):
     if isinstance(vis, list):
         spws = id_spws(vis, freq=42.82048e9)
     else:
         spws = "39"
-    return myclean(vis=vis, name=name, linename='SiOv=2', spws=spws, **kwargs)
+    return myclean(vis=vis, name=name, linename='SiOv=2', spws=spws, chanchunks=8, **kwargs)
 
 def ch3ohmaserclean(vis, name, **kwargs):
     if isinstance(vis, list):
         spws = id_spws(vis, freq=44.06949e9)
     else:
         spws = "50"
-    return myclean(vis=vis, name=name, linename='CH3OH44.1', spws=spws, **kwargs)
+    return myclean(vis=vis, name=name, linename='CH3OH44.1', spws=spws, chanchunks=8, **kwargs)
 
 def ch3ohthermalclean(vis, name, **kwargs):
     if isinstance(vis, list):
         spws = id_spws(vis, freq=48.372456e9)
     else:
         spws = "20"
-    return myclean(vis=vis, name=name, linename='CH3OH48.4', spws=spws, **kwargs)
+    return myclean(vis=vis, name=name, linename='CH3OH48.4', spws=spws, chanchunks=8, **kwargs)
 
 def csclean(vis, name, **kwargs):
-    return myclean(vis=vis, name=name, linename='CS1-0', spws="26", **kwargs)
+    return myclean(vis=vis, name=name, linename='CS1-0', spws="26", chanchunks=8, **kwargs)
 
 
 # Ka-band
