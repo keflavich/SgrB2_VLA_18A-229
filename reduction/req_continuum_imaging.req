@@ -5,8 +5,7 @@
 #
 # These are required
 #
-MEM="30gb"
-VMEM="100gb"
+PMEM="30gb"
 WORK_DIR='/lustre/aginsbur/sgrb2/18A-229/continuum/'
 COMMAND='/lustre/aginsbur/sgrb2/18A-229/reduction_scripts/run_continuum_imaging.sh'
 

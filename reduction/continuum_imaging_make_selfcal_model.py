@@ -21,6 +21,7 @@ good_Q_mses = [
 tclean(vis=['../'+x for x in good_Q_mses],
        field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
        spw=[Qmses[x] for x in good_Q_mses],
+       phasecenter='J2000 17:47:19.693 -28:23:11.527',
        imsize=[18000,18000],
        cell='0.01arcsec',
        imagename='18A-229_mosaic_for_selfcal',
