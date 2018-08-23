@@ -57,6 +57,9 @@ def myclean(
     threshold='0.75mJy',
     robust=0.5,
     savemodel='none',
+    phasecenters=None,
+    mask='',
+    scales=[],
     **kwargs
 ):
     for field in fields:
@@ -64,6 +67,11 @@ def myclean(
                      .format(name=name, field=field.replace(" ","_"),
                              robust=robust, threshold=threshold)
                     )
+        if phasecenters is not None:
+            phasecenter = phasecenters[field]
+        else:
+            phasecenter = ''
+
         if not os.path.exists(imagename+".image.tt0.pbcor.fits"):
             rslt = tclean(vis=vis,
                    field=field,
@@ -73,6 +81,7 @@ def myclean(
                    imagename=imagename,
                    niter=niter,
                    threshold=threshold,
+                   phasecenter=phasecenter,
                    robust=robust,
                    gridder='standard',
                    deconvolver='mtmfs',
@@ -84,6 +93,8 @@ def myclean(
                    outframe='LSRK',
                    datacolumn='corrected',
                    savemodel=savemodel,
+                   scales=scales,
+                   mask=mask,
                    **kwargs
                   )
             makefits(imagename)

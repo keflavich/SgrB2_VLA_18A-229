@@ -31,7 +31,12 @@ for fn in glob.glob("*.image.pbcor.fits"):
     stdspec.write("collapse/stdspec/{0}".format(fn.replace(".image.pbcor.fits", "_std_spec.fits")), overwrite=True)
     stdspec.quicklook("collapse/stdspec/pngs/{0}".format(fn.replace(".image.pbcor.fits", "_std_spec.png")))
 
-    mcube = mcube.with_mask((stdspec < 0.1*cube.unit)[:,None,None])
+    if np.nanmin(stdspec) > 0.1*cube.unit:
+        threshold = np.nanpercentile(stdspec, 90)
+    else:
+        threshold = 0.1
+
+    mcube = mcube.with_mask((stdspec < threshold*cube.unit)[:,None,None])
 
     pl.clf()
     mxspec = mcube.max(axis=(1,2), how='slice')

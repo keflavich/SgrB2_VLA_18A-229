@@ -1,6 +1,7 @@
 """
 Overall imaging script to make combined continuum images for Ka, Q, and K bands
 """
+import os
 import sys
 sys.path.append('.')
 
@@ -17,49 +18,55 @@ good_Q_mses = [
  '18A-229_2018_04_18_T13_19_53.878/18A-229.sb35258391.eb35349729.58226.46470898148.ms',
 ]
 
-# mosaic for Q-band
-tclean(vis=['../'+x for x in good_Q_mses],
-       field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
-       spw=[Qmses[x] for x in good_Q_mses],
-       phasecenter='J2000 17:47:19.693 -28:23:11.527',
-       imsize=[18000,18000],
-       cell='0.01arcsec',
-       imagename='18A-229_mosaic_for_selfcal',
-       niter=10000,
-       threshold='2mJy',
-       robust=0.5,
-       gridder='mosaic',
-       deconvolver='mtmfs',
-       specmode='mfs',
-       nterms=2,
-       weighting='briggs',
-       pblimit=0.2,
-       interactive=False,
-       outframe='LSRK',
-       savemodel='none',
-      )
-makefits('18A-229_mosaic_for_selfcal', cleanup=False)
+imagename = '18A-229_mosaic_for_selfcal'
+if not os.path.exists(imagename+'.image.tt0.pbcor.fits'):
+    # mosaic for Q-band
+    tclean(
+           #vis=['../'+x for x in good_Q_mses],
+           #spw=[Qmses[x] for x in good_Q_mses],
+           vis=['../'+x.replace(".ms","_continuum.ms") for x in good_Q_mses],
+           spw='',
+           field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+           phasecenter='J2000 17:47:19.693 -28:23:11.527',
+           imsize=[18000,18000],
+           cell='0.01arcsec',
+           imagename=imagename,
+           niter=10000,
+           threshold='1mJy',
+           robust=0.5,
+           gridder='mosaic',
+           scales=[0,3,9,27],
+           deconvolver='mtmfs',
+           specmode='mfs',
+           nterms=2,
+           weighting='briggs',
+           pblimit=0.2,
+           interactive=False,
+           outframe='LSRK',
+           savemodel='none',
+          )
+    makefits('18A-229_mosaic_for_selfcal', cleanup=False)
 
 
     
-myclean(['../'+x for x in good_Q_mses],
-        name='18A-229_combined_for_selfcal',
-        threshold='2mJy', # no signal at 5...
-        spws=[Qmses[x] for x in good_Q_mses],
-       )
-
-myclean(['../'+x for x in Kamses],
-        name='18A-229_combined_for_selfcal',
-        threshold='2mJy',
-        cell='0.015arcsec',
-        fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka', 'Sgr B2 S Ka', 'Sgr B2 DS1 Ka', 'Sgr B2 DS2 Ka'],
-        spws=[x for x in Kamses.values()],
-       )
-
-myclean(['../'+x for x in Kmses],
-        name='18A-229_combined_for_selfcal',
-        threshold='2mJy',
-        cell='0.02arcsec',
-        fields=['Sgr B2 MN K', 'Sgr B2 MS K', 'Sgr B2 SDS K',],
-        spws=[x for x in Kmses.values()],
-       )
+#myclean(['../'+x for x in good_Q_mses],
+#        name='18A-229_combined_for_selfcal',
+#        threshold='2mJy', # no signal at 5...
+#        spws=[Qmses[x] for x in good_Q_mses],
+#       )
+#
+# myclean(['../'+x for x in Kamses],
+#         name='18A-229_combined_for_selfcal',
+#         threshold='2mJy',
+#         cell='0.015arcsec',
+#         fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka', 'Sgr B2 S Ka', 'Sgr B2 DS1 Ka', 'Sgr B2 DS2 Ka'],
+#         spws=[x for x in Kamses.values()],
+#        )
+# 
+# myclean(['../'+x for x in Kmses],
+#         name='18A-229_combined_for_selfcal',
+#         threshold='2mJy',
+#         cell='0.02arcsec',
+#         fields=['Sgr B2 MN K', 'Sgr B2 MS K', 'Sgr B2 SDS K',],
+#         spws=[x for x in Kmses.values()],
+#        )

@@ -71,11 +71,13 @@ for ms in mses:
         flagdata(vis=fullpathms, mode='manual', autocorr=True)
 
         # flag edge channels
-        #
         flagchans = ",".join(["{0}:0~5;123~128".format(xx) for xx in
                               Qmses[ms].split(",")])
-
         flagdata(vis=fullpathms, mode='manual', spw=flagchans)
+
+        # flag CH3OH maser
+        flagdata(vis=fullpathms, mode='manual',
+                 spw='44054800170~44084179830Hz:44054800170~44084179830Hz')
 
         split(vis=fullpathms,
               outputvis=fullpathms[:-3]+"_continuum.ms",
@@ -84,6 +86,10 @@ for ms in mses:
               width=16,
               spw=Qmses[ms],
              )
+
+        # Unflag CH3OH maser
+        flagdata(vis=fullpathms, mode='unflag',
+                 spw='44054800170~44084179830Hz:44054800170~44084179830Hz')
 
         clearcal(cont_ms, addmodel=True)
         #ft(vis=cont_ms,
@@ -130,4 +136,5 @@ for ms in mses:
             fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
             threshold='2mJy',
             savemodel='modelcolumn',
+            spws='', # all windows are continuum now
            )
