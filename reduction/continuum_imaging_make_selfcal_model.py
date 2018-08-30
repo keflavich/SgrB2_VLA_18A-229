@@ -27,7 +27,7 @@ if not os.path.exists(imagename+'.image.tt0.pbcor.fits'):
            vis=['../'+x.replace(".ms","_continuum.ms") for x in good_Q_mses],
            spw='',
            field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
-           phasecenter='J2000 17:47:19.693 -28:23:11.527',
+           phasecenter='J2000 17h47m19.693 -28d23m11.527',
            imsize=[18000,18000],
            cell='0.01arcsec',
            imagename=imagename,

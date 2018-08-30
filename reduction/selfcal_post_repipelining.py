@@ -99,14 +99,15 @@ for ms in mses:
         #          '../continuum/18A-229_mosaic_for_selfcal.model.tt1.noneg'],
         #   nterms=2)
 
-        ft(vis=cont_ms,
-           field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
-           spw='',
-           model='../continuum/18A-229_mosaic_for_selfcal.model.tt0.noneg')
 
     caltable = '{0}_sgrb2_selfcal_phase_30ssolint.cal'.format(name)
 
     if not os.path.exists(caltable):
+
+        ft(vis=cont_ms,
+           field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+           spw='',
+           model='../continuum/18A-229_mosaic_for_selfcal.model.tt0.noneg')
 
         gaincal(vis=cont_ms,
                 caltable=caltable,

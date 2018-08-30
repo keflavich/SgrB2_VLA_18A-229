@@ -7,7 +7,8 @@
 #PBS -l nodes=1:ppn=8
 #PBS -d /lustre/aginsbur/sgrb2/18A-229/continuum/
 #PBS -N sb2_18A229_cont
-#PBS -m beaf                 # Send mail on begin, end abort, and fail
+#PBS -m abe
+# # Send mail on begin, end, abort, and fail
 
 WORK_DIR='/lustre/aginsbur/sgrb2/18A-229/continuum/'
 
@@ -17,8 +18,8 @@ echo ${WORK_DIR}
 SCRIPT_DIR="/lustre/aginsbur/sgrb2/18A-229/reduction_scripts/"
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
-xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/continuum_imaging_make_selfcal_model.py')"
-xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_post_repipelining.py')"
+#xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/continuum_imaging_make_selfcal_model.py')"
+#xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_post_repipelining.py')"
 xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_iterations_post_repipelining.py')"
 
 #export CASAPATH=/home/casa/packages/RHEL6/release/casa-release-5.1.0-74

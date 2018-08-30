@@ -10,7 +10,7 @@ sys.path.append('.')
 from continuum_imaging_general import myclean, tclean, makefits
 from continuum_windows import Qmses
 
-from taskinit import msmdtool, iatool, casalog
+from taskinit import msmdtool, iatool, casalog, tbtool
 
 from tclean_cli import tclean_cli as tclean
 from flagdata_cli import flagdata_cli as flagdata
@@ -24,6 +24,7 @@ from exportfits_cli import exportfits_cli as exportfits
 from importfits_cli import importfits_cli as importfits
 ia = iatool()
 msmd = msmdtool()
+tb = tbtool()
 
 
 from astropy.io import fits
@@ -41,13 +42,13 @@ if not os.path.exists(cont_vis):
 imagename = '18A-229_Q_mosaic_for_selfcal_iter1'
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
-        spw='',
-        imsize=[1000,1000],
+        spws='',
+        imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
                       "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
                       "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
                       "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                     }
+                     },
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
@@ -55,22 +56,44 @@ myclean(vis=cont_vis,
         robust=0.5,
         savemodel='modelcolumn',
        )
+if not os.path.exists(imagename+".image.tt0.pbcor"):
+    # do a full-mosaic clean to enable mask creation
+    tclean(
+           vis=cont_vis,
+           spw='',
+           field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+           phasecenter='J2000 17h47m19.693 -28d23m11.527',
+           imsize=[18000,18000],
+           cell='0.01arcsec',
+           imagename=imagename,
+           niter=10000,
+           threshold='1mJy',
+           robust=0.5,
+           gridder='mosaic',
+           scales=[0,3,9,27],
+           deconvolver='mtmfs',
+           specmode='mfs',
+           nterms=2,
+           weighting='briggs',
+           pblimit=0.2,
+           interactive=False,
+           outframe='LSRK',
+           savemodel='none',
+          )
+    makefits(imagename)
 
-caltable = '18A-229_Q_concatenated_cal_iter1'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='10s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-       )
 
-applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
-         gaintable=[caltable], calwt=[False], applymode='calonly',
-         antenna='*&*', spwmap=[], parang=True,)
-
+caltable = '18A-229_Q_concatenated_cal_iter1.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='10s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+           )
 
 
 # create a mask
@@ -101,82 +124,93 @@ makemask(mode='copy', inpimage=cleanbox_mask_image,
 mask = cleanbox_mask_image
 
 imagename = '18A-229_Q_mosaic_for_selfcal_iter2'
+if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
+             gaintable=[caltable], calwt=[False], applymode='calonly',
+             antenna='*&*', spwmap=[], parang=True,)
+
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
-        spw='',
-        imsize=[1000,1000],
+        spws='',
+        imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
                       "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
                       "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
                       "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                     }
+                     },
         cell='0.01arcsec',
         name=imagename,
+        scales=[0,3,9,27],
         niter=10000,
         threshold='1mJy',
         robust=0.5,
         savemodel='modelcolumn',
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter2'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='10s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-       )
+caltable = '18A-229_Q_concatenated_cal_iter2.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='10s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+           )
 
-caltable = '18A-229_Q_concatenated_cal_iter2_combinespw'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='10s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-        combine='spw',
-       )
+caltable = '18A-229_Q_concatenated_cal_iter2_combinespw.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='10s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+            combine='spw',
+           )
 
-caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='30s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-        combine='spw',
-       )
+caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='30s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+            combine='spw',
+           )
 
-caltable = '18A-229_Q_concatenated_cal_iter2_30s'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='30s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-       )
+caltable = '18A-229_Q_concatenated_cal_iter2_30s.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='30s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+           )
 
 
 tb.open(cont_vis+"/SPECTRAL_WINDOW")
 nspw = len(tb.getcol('NAME'))
 tb.close()
 
-applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
-         gaintable=[caltable], calwt=[False], applymode='calonly',
-         antenna='*&*', 
-         #spwmap=[0]*nspw,
-         parang=True,)
-
-
 imagename = '18A-229_Q_mosaic_for_selfcal_iter3'
+if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
+             gaintable=[caltable], calwt=[False], applymode='calonly',
+             antenna='*&*',
+             #spwmap=[0]*nspw,
+             parang=True,)
+
+
 outlierfile = """# Outlier File
 imagename={imname}_M
 phasecenter=J2000 17h47m20.167 -28d23m04.337
@@ -199,102 +233,167 @@ with open("outlierfile.txt","w") as fh:
 
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
-        spw='',
-        imsize=[1000,1000],
+        spws='',
+        imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
                       "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
                       "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
                       "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                     }
+                     },
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
+        scales=[0,3,9,27],
         threshold='1mJy',
         robust=0.5,
         savemodel='modelcolumn',
         mask=mask,
-        scales=[0,3,9],
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter3_20s'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='20s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-       )
-
-applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
-         gaintable=[caltable], calwt=[False], applymode='calonly',
-         antenna='*&*', 
-         #spwmap=[0]*nspw,
-         parang=True,)
+caltable = '18A-229_Q_concatenated_cal_iter3_20s.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='20s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+           )
 
 imagename = '18A-229_Q_mosaic_for_selfcal_iter4'
-myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
-        spw='',
-        imsize=[1000,1000],
-        phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
-                      "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
-                      "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
-                      "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                     }
-        cell='0.01arcsec',
-        name=imagename,
-        niter=10000,
-        threshold='1mJy',
-        robust=0.5,
-        savemodel='modelcolumn',
-        mask=mask,
-        scales=[0,3,9],
-       )
-makefits(imagename, cleanup=False)
-
-
-caltable = '18A-229_Q_concatenated_cal_iter4_20s'
-gaincal(vis=cont_vis,
-        caltable=caltable,
-        field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-        calmode='p',
-        refant='',
-        solint='20s',
-        #uvrange='0~2000klambda',
-        minblperant=3,
-       )
-
-gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
-for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
-    # apply the self-calibrations to the rest of the data
-    applycal(vis=cont_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
+if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
-             antenna='*&*', 
+             antenna='*&*',
              #spwmap=[0]*nspw,
              parang=True,)
 
-imagename = '18A-229_Q_selfcal_iter4_indiv'
-myclean(vis=cont_vis,
+selfcal_split_vis = 'continuum_concatenated_selfcal.ms'
+split(vis=cont_vis, outputvis=selfcal_split_vis,
+      datacolumn='corrected',)
+
+myclean(vis=selfcal_split_vis,
+        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
+        spws='',
+        imsize=1000,
+        phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
+                      "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
+                      "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
+                      "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
+                     },
+        cell='0.01arcsec',
         name=imagename,
+        niter=10000,
+        scales=[0,3,9,27],
+        threshold='1mJy',
+        robust=0.5,
+        savemodel='modelcolumn',
+        mask=mask,
+       )
+
+
+caltable = '18A-229_Q_concatenated_cal_iter4_20s.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=selfcal_split_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='20s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+           )
+
+imagename = '18A-229_Q_selfcal_iter5'
+if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    # apply calibration from 4 self-cal'd fields to *all* fields
+    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
+    for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
+        # apply the self-calibrations to the rest of the data
+        applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
+                 gaintable=[caltable], calwt=[False], applymode='calonly',
+                 antenna='*&*',
+                 #spwmap=[0]*nspw,
+                 parang=True,)
+
+myclean(vis=selfcal_split_vis,
+        name=imagename,
+        spws='', # even for indiv, we're dealing with cont splitted data...
+        niter=10000,
+        threshold='1mJy',
+        scales=[0,3,9,27],
+        robust=0.5,
+        mask=mask,
+        savemodel='modelcolumn',
+       )
+
+caltable = '18A-229_Q_concatenated_cal_iter5_20s.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=selfcal_split_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            calmode='p',
+            refant='',
+            solint='20s',
+            #uvrange='0~2000klambda',
+            minblperant=3,
+           )
+
+imagename = '18A-229_Q_selfcal_iter6'
+if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
+    for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
+        # apply the self-calibrations to the rest of the data
+        applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
+                 gaintable=[caltable], calwt=[False], applymode='calonly',
+                 antenna='*&*',
+                 #spwmap=[0]*nspw,
+                 parang=True,)
+
+
+myclean(vis=selfcal_split_vis,
+        name=imagename,
+        spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
         threshold='1mJy',
         robust=0.5,
         mask=mask,
-        scales=[0,3,9],
+        scales=[0,3,9,27],
+        savemodel='modelcolumn',
        )
-makefits(imagename, cleanup=False)
-
-
+tclean(
+       vis=selfcal_split_vis,
+       spw='',
+       field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+       phasecenter='J2000 17h47m19.693 -28d23m11.527',
+       imsize=[18000,18000],
+       cell='0.01arcsec',
+       imagename=imagename,
+       niter=10000,
+       threshold='1mJy',
+       robust=0.5,
+       gridder='mosaic',
+       scales=[0,3,9,27],
+       deconvolver='mtmfs',
+       specmode='mfs',
+       nterms=2,
+       weighting='briggs',
+       pblimit=0.2,
+       interactive=False,
+       outframe='LSRK',
+       savemodel='none',
+      )
+makefits(imagename)
 
 # make some smaller diagnostic images
-msmd.open(cont_vis)
+msmd.open(selfcal_split_vis)
 summary = msmd.summary()
 msmd.close()
 for spw in np.unique(summary['spectral windows']['names']):
-    imagename = '18A-229_Q_M_for_selfcal_iter4_diagnostics_spw{0}'.format(spw)
+    imagename = '18A-229_Q_M_for_selfcal_iter6_diagnostics_spw{0}'.format(spw)
     tclean(vis=cont_vis,
            imagename=imagename,
            field="Sgr B2 NM Q,Sgr B2 MS Q",
@@ -315,6 +414,6 @@ for spw in np.unique(summary['spectral windows']['names']):
            interactive=False,
            outframe='LSRK',
            savemodel='none',
-           scales=[0,3,9],
+           scales=[0,3,9,27],
           )
     makefits(imagename, cleanup=False)
