@@ -119,6 +119,18 @@ for ms in mses:
                 minblperant=3,
                )
 
+        # these tables are JUST FOR DIAGNOSTICS: don't use them
+        caltable = '{0}_sgrb2_selfcal_amp_30ssolint_dontuse.cal'.format(name)
+        gaincal(vis=cont_ms,
+                caltable=caltable,
+                field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+                calmode='a',
+                refant='',
+                solint='inf',
+                #uvrange='0~2000klambda',
+                minblperant=3,
+               )
+
     applycal(flagbackup=False,
              gainfield=[],
              interp=[],
