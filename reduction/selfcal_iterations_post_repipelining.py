@@ -6,7 +6,8 @@ import os
 #runpy.run_path('continuum_imaging_general.py')
 import pyregion
 import sys
-sys.path.append('.')
+assert os.getenv('SCRIPT_DIR') is not None
+sys.path.append(os.getenv('SCRIPT_DIR'))
 from continuum_imaging_general import myclean, tclean, makefits
 from continuum_windows import Qmses
 
