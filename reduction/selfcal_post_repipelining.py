@@ -120,9 +120,9 @@ for ms in mses:
                )
 
         # these tables are JUST FOR DIAGNOSTICS: don't use them
-        caltable = '{0}_sgrb2_selfcal_amp_30ssolint_dontuse.cal'.format(name)
+        ampcaltable = '{0}_sgrb2_selfcal_amp_30ssolint_dontuse.cal'.format(name)
         gaincal(vis=cont_ms,
-                caltable=caltable,
+                caltable=ampcaltable,
                 field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
                 calmode='a',
                 refant='',
@@ -142,12 +142,32 @@ for ms in mses:
              spwmap=[],
              parang=True)
 
-    myclean(vis=cont_ms,
-            name=name,
-            imsize=8000,
-            cell='0.01arcsec',
-            fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
-            threshold='2mJy',
-            savemodel='modelcolumn',
-            spws='', # all windows are continuum now
-           )
+    if False: # slow version
+        myclean(vis=cont_ms,
+                name=name,
+                imsize=8000,
+                cell='0.01arcsec',
+                fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+                threshold='2mJy',
+                savemodel='modelcolumn',
+                spws='', # all windows are continuum now
+                scales=[0,3,9,27],
+               )
+    else:
+        myclean(vis=cont_ms,
+                name="cutout_"+name,
+                fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+                spws='',
+                imsize=1000,
+                phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
+                              "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
+                              "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
+                              "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
+                             },
+                cell='0.01arcsec',
+                scales=[0,3,9,27],
+                niter=10000,
+                threshold='2mJy',
+                robust=0.5,
+                savemodel='modelcolumn',
+               )

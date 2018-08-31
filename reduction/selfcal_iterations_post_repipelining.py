@@ -39,7 +39,7 @@ cont_vis = 'continuum_concatenated.ms'
 if not os.path.exists(cont_vis):
     assert concat(vis=fullpath_mses, concatvis=cont_vis)
 
-imagename = '18A-229_Q_mosaic_for_selfcal_iter1'
+imagename = '18A-229_Q_singlefield_selfcal_iter1'
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
         spws='',
@@ -56,6 +56,7 @@ myclean(vis=cont_vis,
         robust=0.5,
         savemodel='modelcolumn',
        )
+imagename = '18A-229_Q_mosaic_selfcal_iter1'
 if not os.path.exists(imagename+".image.tt0.pbcor"):
     # do a full-mosaic clean to enable mask creation
     tclean(
@@ -123,7 +124,7 @@ makemask(mode='copy', inpimage=cleanbox_mask_image,
 
 mask = cleanbox_mask_image
 
-imagename = '18A-229_Q_mosaic_for_selfcal_iter2'
+imagename = '18A-229_Q_singlefield_selfcal_iter2'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -202,7 +203,7 @@ tb.open(cont_vis+"/SPECTRAL_WINDOW")
 nspw = len(tb.getcol('NAME'))
 tb.close()
 
-imagename = '18A-229_Q_mosaic_for_selfcal_iter3'
+imagename = '18A-229_Q_singlefield_selfcal_iter3'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -263,7 +264,7 @@ if not os.path.exists(caltable):
             minblperant=3,
            )
 
-imagename = '18A-229_Q_mosaic_for_selfcal_iter4'
+imagename = '18A-229_Q_singlefield_selfcal_iter4'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -307,7 +308,7 @@ if not os.path.exists(caltable):
             minblperant=3,
            )
 
-imagename = '18A-229_Q_selfcal_iter5'
+imagename = '18A-229_Q_singlefield_selfcal_iter5'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
     gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
@@ -342,7 +343,7 @@ if not os.path.exists(caltable):
             minblperant=3,
            )
 
-imagename = '18A-229_Q_selfcal_iter6'
+imagename = '18A-229_Q_singlefield_selfcal_iter6'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
@@ -364,6 +365,8 @@ myclean(vis=selfcal_split_vis,
         scales=[0,3,9,27],
         savemodel='modelcolumn',
        )
+
+imagename = '18A-229_Q_mosaic_selfcal_iter6'
 tclean(
        vis=selfcal_split_vis,
        spw='',
@@ -393,7 +396,7 @@ msmd.open(selfcal_split_vis)
 summary = msmd.summary()
 msmd.close()
 for spw in np.unique(summary['spectral windows']['names']):
-    imagename = '18A-229_Q_M_for_selfcal_iter6_diagnostics_spw{0}'.format(spw)
+    imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_spw{0}'.format(spw)
     tclean(vis=cont_vis,
            imagename=imagename,
            field="Sgr B2 NM Q,Sgr B2 MS Q",
