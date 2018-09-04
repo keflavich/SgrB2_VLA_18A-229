@@ -106,7 +106,7 @@ for ms in mses:
     # this image is reliable, even if the phase is no longer directly measured.
     # All of the other approaches have done really weird things.
     # Definitely DO NOT use this for amplitude self-cal!!
-    model = '../reduction_scripts/DePree_NM_regridNM.image'
+    model = '../reduction_scripts/DePree_NM_regridNM_jypix.image'
 
     if os.path.exists(model):
         # if it doesn't exist, we need to run
