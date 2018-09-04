@@ -17,6 +17,7 @@ from gaincal_cli import gaincal_cli as gaincal
 from applycal_cli import applycal_cli as applycal
 from importfits_cli import importfits_cli as importfits
 from imhead_cli import imhead_cli as imhead
+from split_cli import split_cli as split
 
 from astropy.io import fits
 
@@ -81,7 +82,7 @@ for ms in mses:
                  spw='44054800170~44084179830Hz:44054800170~44084179830Hz')
 
         split(vis=fullpathms,
-              outputvis=fullpathms[:-3]+"_continuum.ms",
+              outputvis=cont_ms,
               field=('Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,'
                      'Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'),
               width=16,
@@ -141,7 +142,7 @@ for ms in mses:
                     solint='inf',
                     #uvrange='0~2000klambda',
                     minblperant=3,
-                    combine='scan,obs',
+                    combine='scan',
                    )
 
         applycal(flagbackup=False,
