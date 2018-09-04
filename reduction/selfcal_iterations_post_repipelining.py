@@ -42,7 +42,7 @@ if not os.path.exists(cont_vis):
 
 imagename = '18A-229_Q_singlefield_selfcal_iter1'
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
+        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -89,7 +89,7 @@ caltable = '18A-229_Q_concatenated_cal_iter1.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='10s',
@@ -132,7 +132,7 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
              antenna='*&*', spwmap=[], parang=True,)
 
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
+        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -153,7 +153,7 @@ caltable = '18A-229_Q_concatenated_cal_iter2.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='10s',
@@ -165,7 +165,7 @@ caltable = '18A-229_Q_concatenated_cal_iter2_combinespw.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='10s',
@@ -178,7 +178,7 @@ caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='30s',
@@ -191,7 +191,7 @@ caltable = '18A-229_Q_concatenated_cal_iter2_30s.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='30s',
@@ -234,7 +234,7 @@ with open("outlierfile.txt","w") as fh:
     fh.write(outlierfile)
 
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
+        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -257,7 +257,7 @@ caltable = '18A-229_Q_concatenated_cal_iter3_20s.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='20s',
@@ -278,7 +278,7 @@ split(vis=cont_vis, outputvis=selfcal_split_vis,
       datacolumn='corrected',)
 
 myclean(vis=selfcal_split_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q".split(","),
+        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -301,7 +301,7 @@ caltable = '18A-229_Q_concatenated_cal_iter4_20s.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='20s',
@@ -312,7 +312,7 @@ if not os.path.exists(caltable):
 imagename = '18A-229_Q_singlefield_selfcal_iter5'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
-    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
+    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
         # apply the self-calibrations to the rest of the data
         applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
@@ -336,7 +336,7 @@ caltable = '18A-229_Q_concatenated_cal_iter5_20s.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='20s',
@@ -346,7 +346,7 @@ if not os.path.exists(caltable):
 
 imagename = '18A-229_Q_singlefield_selfcal_iter6'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
-    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'
+    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
         # apply the self-calibrations to the rest of the data
         applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],

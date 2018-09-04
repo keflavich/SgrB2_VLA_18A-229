@@ -123,7 +123,7 @@ for ms in mses:
 
             gaincal(vis=cont_ms,
                     caltable=caltable,
-                    field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+                    field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
                     calmode='p',
                     refant='',
                     solint='30s',
@@ -135,7 +135,7 @@ for ms in mses:
             ampcaltable = '{0}_sgrb2_selfcal_amp_INFsolint_dontuse.cal'.format(name)
             gaincal(vis=cont_ms,
                     caltable=ampcaltable,
-                    field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+                    field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
                     calmode='a',
                     refant='',
                     solint='inf',
@@ -160,7 +160,7 @@ for ms in mses:
                     name=name,
                     imsize=8000,
                     cell='0.01arcsec',
-                    fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+                    fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q'],
                     threshold='2mJy',
                     savemodel='modelcolumn',
                     spws='', # all windows are continuum now
@@ -189,7 +189,7 @@ for ms in mses:
 
             myclean(vis=cont_ms,
                     name="cutout_"+name,
-                    fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+                    fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q'],
                     spws='',
                     imsize=1000,
                     phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
