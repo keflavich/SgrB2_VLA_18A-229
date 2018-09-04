@@ -60,6 +60,7 @@ def myclean(
     phasecenters=None,
     mask='',
     scales=[],
+    datacolumn='corrected',
     **kwargs
 ):
     for field in fields:
@@ -91,7 +92,7 @@ def myclean(
                    pblimit=0.2,
                    interactive=False,
                    outframe='LSRK',
-                   datacolumn='corrected',
+                   datacolumn=datacolumn,
                    savemodel=savemodel,
                    scales=scales,
                    mask=mask,

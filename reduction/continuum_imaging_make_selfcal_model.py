@@ -48,7 +48,6 @@ if not os.path.exists(imagename+'.image.tt0.pbcor.fits'):
     makefits('18A-229_mosaic_for_selfcal', cleanup=False)
 
 
-    
 #myclean(['../'+x for x in good_Q_mses],
 #        name='18A-229_combined_for_selfcal',
 #        threshold='2mJy', # no signal at 5...

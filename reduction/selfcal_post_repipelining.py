@@ -101,74 +101,106 @@ for ms in mses:
         #   nterms=2)
 
 
-    caltable = '{0}_sgrb2_selfcal_phase_30ssolint.cal'.format(name)
+    model = '../continuum/18A-229_mosaic_for_selfcal.model.tt0.noneg'
 
-    if not os.path.exists(caltable):
+    # this image is reliable, even if the phase is no longer directly measured.
+    # All of the other approaches have done really weird things.
+    # Definitely DO NOT use this for amplitude self-cal!!
+    model = '../reduction_scripts/DePree_NM_regridNM.image'
 
-        ft(vis=cont_ms,
-           field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
-           spw='',
-           model='../continuum/18A-229_mosaic_for_selfcal.model.tt0.noneg')
+    if os.path.exists(model):
+        # if it doesn't exist, we need to run
+        # continuum_imaging_make_selfcal_model
 
-        gaincal(vis=cont_ms,
-                caltable=caltable,
-                field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-                calmode='p',
-                refant='',
-                solint='30s',
-                #uvrange='0~2000klambda',
-                minblperant=3,
-               )
+        caltable = '{0}_sgrb2_selfcal_phase_30ssolint.cal'.format(name)
 
-        # these tables are JUST FOR DIAGNOSTICS: don't use them
-        ampcaltable = '{0}_sgrb2_selfcal_amp_30ssolint_dontuse.cal'.format(name)
-        gaincal(vis=cont_ms,
-                caltable=ampcaltable,
-                field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
-                calmode='a',
-                refant='',
-                solint='inf',
-                #uvrange='0~2000klambda',
-                minblperant=3,
-               )
+        if not os.path.exists(caltable):
 
-    applycal(flagbackup=False,
-             gainfield=[],
-             interp=[],
-             gaintable=[caltable],
-             calwt=[False],
-             vis=cont_ms,
-             applymode='calonly',
-             antenna='*&*',
-             spwmap=[],
-             parang=True)
+            ft(vis=cont_ms,
+               field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+               spw='',
+               model=model)
 
-    if False: # slow version
-        myclean(vis=cont_ms,
-                name=name,
-                imsize=8000,
-                cell='0.01arcsec',
-                fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
-                threshold='2mJy',
-                savemodel='modelcolumn',
-                spws='', # all windows are continuum now
-                scales=[0,3,9,27],
-               )
-    else:
-        myclean(vis=cont_ms,
-                name="cutout_"+name,
-                fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
-                spws='',
-                imsize=1000,
-                phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
-                              "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
-                              "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
-                              "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                             },
-                cell='0.01arcsec',
-                scales=[0,3,9,27],
-                niter=10000,
-                threshold='2mJy',
-                robust=0.5,
-                savemodel='modelcolumn',
-               )
+            gaincal(vis=cont_ms,
+                    caltable=caltable,
+                    field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+                    calmode='p',
+                    refant='',
+                    solint='30s',
+                    #uvrange='0~2000klambda',
+                    minblperant=3,
+                   )
+
+            # these tables are JUST FOR DIAGNOSTICS: don't use them
+            ampcaltable = '{0}_sgrb2_selfcal_amp_30ssolint_dontuse.cal'.format(name)
+            gaincal(vis=cont_ms,
+                    caltable=ampcaltable,
+                    field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
+                    calmode='a',
+                    refant='',
+                    solint='inf',
+                    #uvrange='0~2000klambda',
+                    minblperant=3,
+                    combine='scan',
+                   )
+
+        applycal(flagbackup=False,
+                 gainfield=[],
+                 interp=[],
+                 gaintable=[caltable],
+                 calwt=[False],
+                 vis=cont_ms,
+                 applymode='calonly',
+                 antenna='*&*',
+                 spwmap=[],
+                 parang=True)
+
+        if False: # slow version
+            myclean(vis=cont_ms,
+                    name=name,
+                    imsize=8000,
+                    cell='0.01arcsec',
+                    fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+                    threshold='2mJy',
+                    savemodel='modelcolumn',
+                    spws='', # all windows are continuum now
+                    scales=[0,3,9,27],
+                   )
+        else:
+            # Diagnostic: make sure the before & after are different
+            myclean(vis=cont_ms,
+                    name="before_cutout_"+name,
+                    fields=['Sgr B2 MS Q',],
+                    spws='',
+                    imsize=1000,
+                    phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
+                                  "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
+                                  "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
+                                  "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
+                                 },
+                    cell='0.01arcsec',
+                    scales=[0,3,9,27],
+                    niter=10000,
+                    threshold='2mJy',
+                    robust=0.5,
+                    savemodel='modelcolumn',
+                    datacolumn='data',
+                   )
+
+            myclean(vis=cont_ms,
+                    name="cutout_"+name,
+                    fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q', 'Sgr B2 S Q'],
+                    spws='',
+                    imsize=1000,
+                    phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
+                                  "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
+                                  "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
+                                  "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
+                                 },
+                    cell='0.01arcsec',
+                    scales=[0,3,9,27],
+                    niter=10000,
+                    threshold='2mJy',
+                    robust=0.5,
+                    savemodel='modelcolumn',
+                   )
