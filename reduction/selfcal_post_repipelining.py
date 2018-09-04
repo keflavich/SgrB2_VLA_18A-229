@@ -132,7 +132,7 @@ for ms in mses:
                    )
 
             # these tables are JUST FOR DIAGNOSTICS: don't use them
-            ampcaltable = '{0}_sgrb2_selfcal_amp_30ssolint_dontuse.cal'.format(name)
+            ampcaltable = '{0}_sgrb2_selfcal_amp_INFsolint_dontuse.cal'.format(name)
             gaincal(vis=cont_ms,
                     caltable=ampcaltable,
                     field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q',
@@ -141,7 +141,7 @@ for ms in mses:
                     solint='inf',
                     #uvrange='0~2000klambda',
                     minblperant=3,
-                    combine='scan',
+                    combine='scan,obs',
                    )
 
         applycal(flagbackup=False,
@@ -183,7 +183,7 @@ for ms in mses:
                     niter=10000,
                     threshold='2mJy',
                     robust=0.5,
-                    savemodel='modelcolumn',
+                    savemodel='none',
                     datacolumn='data',
                    )
 
