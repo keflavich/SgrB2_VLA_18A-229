@@ -10,6 +10,8 @@ import os
 import sys
 import glob
 import shutil
+import socket
+import datetime
 assert os.getenv('SCRIPT_DIR') is not None
 sys.path.append(os.getenv('SCRIPT_DIR'))
 from continuum_imaging_general import myclean, tclean, makefits
@@ -29,19 +31,40 @@ for dir in glob.glob("18A-229*"):
     assert len(avgphasegain) == 1
 
     ms = avgphasegain[0][:-19]
+    fullpathms = os.path.join(dir, ms)
 
     if os.path.exists('done_recalibrating_{0}'.format(ms)):
         print("Skipping {0}".format(ms))
+        os.chdir(cwd)
         continue
+
+    if fullpathms not in Qmses:
+        print("Skipping non-Q-band MS {0}".format(ms))
+        os.chdir(cwd)
+        continue
+
+    if os.path.exists('WORKING'):
+        print("Skipping {0} because it's actively being worked on.".format(ms))
+        continue
+
+    with open('WORKING', 'w') as fh:
+        fh.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     if not os.path.exists(ms):
         rngms = "/home/rng90002/sgrb2/18A-229/{0}".format(ms)
-        assert os.path.exists(rngms)
+        if not os.path.exists(rngms):
+            print("Skipping {0} because /home/rng90002 doesn't exist".format(rngms))
+            os.remove('WORKING')
+            continue
         shutil.copytree(rngms, ms)
 
+        if socket.gethostname() == "rng9000":
+            print("Done copying; moving on...")
+            os.remove('WORKING')
+            continue
+
     applycal(vis=ms,
-             field='"Sgr B2 N Q",J1733-1304,"Sgr B2 DS3 Q","Sgr B2 MS Q","Sgr B2 DS2 Q","SgrB2 DS1 Q","Sgr B2 S Q","Sgr B2 NM Q",J1744-3116,"1331+305=3C286"',
-             intent='TARGET,POINTING,BANDPASS,AMPLITUDE,PHASE,SYSTEM_CONFIGURATION,UNSPECIFIED#UNSPECIFIED',
+             field='"Sgr B2 N Q",J1733-1304,"Sgr B2 DS3 Q","Sgr B2 MS Q","Sgr B2 DS2 Q","Sgr B2 DS1 Q","Sgr B2 S Q","Sgr B2 NM Q",J1744-3116,"1331+305=3C286"',
              spw='',
              antenna='',
              gaintable=[ms+'.hifv_priorcals.s5_3.gc.tbl',
@@ -65,7 +88,7 @@ for dir in glob.glob("18A-229*"):
 
     # flag edge channels
     flagchans = ",".join(["{0}:0~5;123~128".format(xx) for xx in
-                          Qmses[ms].split(",")])
+                          Qmses[fullpathms].split(",")])
     flagdata(vis=ms, mode='manual', spw=flagchans)
 
     # flag CH3OH maser
@@ -77,7 +100,7 @@ for dir in glob.glob("18A-229*"):
           field=('Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,'
                  'Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'),
           width=16,
-          spw=Qmses[ms],
+          spw=Qmses[fullpathms],
          )
 
     # Unflag CH3OH maser
@@ -86,5 +109,7 @@ for dir in glob.glob("18A-229*"):
 
     with open('done_recalibrating_{0}'.format(ms), 'w') as fh:
         fh.write("cont_ms={0}, ms={1}".format(cont_ms, ms))
+
+    os.remove('WORKING')
 
     os.chdir(cwd)
