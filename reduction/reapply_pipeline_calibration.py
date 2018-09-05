@@ -45,6 +45,7 @@ for dir in glob.glob("18A-229*"):
 
     if os.path.exists('WORKING'):
         print("Skipping {0} because it's actively being worked on.".format(ms))
+        os.chdir(cwd)
         continue
 
     with open('WORKING', 'w') as fh:
@@ -55,22 +56,37 @@ for dir in glob.glob("18A-229*"):
         if not os.path.exists(rngms):
             print("Skipping {0} because /home/rng90002 doesn't exist".format(rngms))
             os.remove('WORKING')
+            os.chdir(cwd)
             continue
+        print("Copying {0} to {1}/{2}".format(rngms, dir, ms))
         shutil.copytree(rngms, ms)
 
         if socket.gethostname() == "rng9000":
             print("Done copying; moving on...")
             os.remove('WORKING')
+            os.chdir(cwd)
             continue
+
+    def find_file(globstr):
+        result = glob.glob(globstr)
+        if len(result) != 1:
+            raise ValueError("Found wrong # of tbls: {0} from {1} in {2}"
+                             .format(result, globstr, dir))
+        return result[0]
+
+    gc_tbl = find_file("*_3.gc.tbl")
+    opac_tbl = find_file("*_4.opac.tbl")
+    rq_tbl = find_file('*_5.rq.tbl')
+    ants_tbl = find_file('*_7.ants.tbl')
 
     applycal(vis=ms,
              field='"Sgr B2 N Q",J1733-1304,"Sgr B2 DS3 Q","Sgr B2 MS Q","Sgr B2 DS2 Q","Sgr B2 DS1 Q","Sgr B2 S Q","Sgr B2 NM Q",J1744-3116,"1331+305=3C286"',
              spw='',
              antenna='',
-             gaintable=[ms+'.hifv_priorcals.s5_3.gc.tbl',
-                        ms+'.hifv_priorcals.s5_4.opac.tbl',
-                        ms+'.hifv_priorcals.s5_5.rq.tbl',
-                        ms+'.hifv_priorcals.s5_7.ants.tbl',
+             gaintable=[gc_tbl,
+                        opac_tbl,
+                        rq_tbl,
+                        ants_tbl,
                         ms+'.finaldelay.k',
                         ms+'.finalBPcal.b',
                         ms+'.averagephasegain.g',
