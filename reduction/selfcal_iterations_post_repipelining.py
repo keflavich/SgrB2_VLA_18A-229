@@ -8,7 +8,7 @@ import pyregion
 import sys
 assert os.getenv('SCRIPT_DIR') is not None
 sys.path.append(os.getenv('SCRIPT_DIR'))
-from continuum_imaging_general import myclean, tclean, makefits
+from continuum_imaging_general import myclean, makefits
 from continuum_windows import Qmses
 
 from taskinit import msmdtool, iatool, casalog, tbtool
@@ -18,6 +18,7 @@ from flagdata_cli import flagdata_cli as flagdata
 from ft_cli import ft_cli as ft
 from gaincal_cli import gaincal_cli as gaincal
 from applycal_cli import applycal_cli as applycal
+from concat_cli import concat_cli as concat
 from importfits_cli import importfits_cli as importfits
 from imhead_cli import imhead_cli as imhead
 from makemask_cli import makemask_cli as makemask

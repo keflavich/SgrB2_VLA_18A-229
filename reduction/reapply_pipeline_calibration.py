@@ -17,12 +17,17 @@ sys.path.append(os.getenv('SCRIPT_DIR'))
 from continuum_imaging_general import myclean, tclean, makefits
 from continuum_windows import Qmses
 
+from taskinit import casalog
 from flagdata_cli import flagdata_cli as flagdata
 from applycal_cli import applycal_cli as applycal
 from split_cli import split_cli as split
 
 cwd = os.getcwd()
 assert cwd == "/lustre/aginsbur/sgrb2/18A-229"
+
+def logprint(string):
+    print(string)
+    casalog.post(string, origin='reapply_pipeline_calibration')
 
 for dir in glob.glob("18A-229*"):
     os.chdir(dir)
@@ -34,17 +39,17 @@ for dir in glob.glob("18A-229*"):
     fullpathms = os.path.join(dir, ms)
 
     if os.path.exists('done_recalibrating_{0}'.format(ms)):
-        print("Skipping {0}".format(ms))
+        logprint("Skipping {0}".format(ms))
         os.chdir(cwd)
         continue
 
     if fullpathms not in Qmses:
-        print("Skipping non-Q-band MS {0}".format(ms))
+        logprint("Skipping non-Q-band MS {0}".format(ms))
         os.chdir(cwd)
         continue
 
     if os.path.exists('WORKING'):
-        print("Skipping {0} because it's actively being worked on.".format(ms))
+        logprint("Skipping {0} because it's actively being worked on.".format(ms))
         os.chdir(cwd)
         continue
 
@@ -54,15 +59,15 @@ for dir in glob.glob("18A-229*"):
     if not os.path.exists(ms):
         rngms = "/home/rng90002/sgrb2/18A-229/{0}".format(ms)
         if not os.path.exists(rngms):
-            print("Skipping {0} because /home/rng90002 doesn't exist".format(rngms))
+            logprint("Skipping {0} because /home/rng90002 doesn't exist".format(rngms))
             os.remove('WORKING')
             os.chdir(cwd)
             continue
-        print("Copying {0} to {1}/{2}".format(rngms, dir, ms))
+        logprint("Copying {0} to {1}/{2}".format(rngms, dir, ms))
         shutil.copytree(rngms, ms)
 
         if socket.gethostname() == "rng9000":
-            print("Done copying; moving on...")
+            logprint("Done copying {0} to {1}/{2}".format(rngms, dir, ms))
             os.remove('WORKING')
             os.chdir(cwd)
             continue
@@ -77,25 +82,43 @@ for dir in glob.glob("18A-229*"):
     gc_tbl = find_file("*_3.gc.tbl")
     opac_tbl = find_file("*_4.opac.tbl")
     rq_tbl = find_file('*_5.rq.tbl')
-    ants_tbl = find_file('*_7.ants.tbl')
+    try:
+        ants_tbl = find_file('*_7.ants.tbl')
+        gaintables = [gc_tbl,
+                      opac_tbl,
+                      rq_tbl,
+                      ants_tbl,
+                      ms+'.finaldelay.k',
+                      ms+'.finalBPcal.b',
+                      ms+'.averagephasegain.g',
+                      ms+'.finalampgaincal.g',
+                      ms+'.finalphasegaincal.g']
+    except ValueError:
+        gaintables = [gc_tbl,
+                      opac_tbl,
+                      rq_tbl,
+                      ms+'.finaldelay.k',
+                      ms+'.finalBPcal.b',
+                      ms+'.averagephasegain.g',
+                      ms+'.finalampgaincal.g',
+                      ms+'.finalphasegaincal.g']
+
+    ntables = len(gaintables)
+    gainfield = [''] * ntables
+    spwmap = [[]] * ntables
+    interp = ['linear,nearestflag' if 'finalBPcal' in tb else ''
+              for tb in gaintables]
+    calwt = [False] * ntables
 
     applycal(vis=ms,
              field='"Sgr B2 N Q",J1733-1304,"Sgr B2 DS3 Q","Sgr B2 MS Q","Sgr B2 DS2 Q","Sgr B2 DS1 Q","Sgr B2 S Q","Sgr B2 NM Q",J1744-3116,"1331+305=3C286"',
              spw='',
              antenna='',
-             gaintable=[gc_tbl,
-                        opac_tbl,
-                        rq_tbl,
-                        ants_tbl,
-                        ms+'.finaldelay.k',
-                        ms+'.finalBPcal.b',
-                        ms+'.averagephasegain.g',
-                        ms+'.finalampgaincal.g',
-                        ms+'.finalphasegaincal.g'],
-             gainfield=['', '', '', '', '', '', '', '', ''],
-             spwmap=[[], [], [], [], [], [], [], [], []],
-             interp=['', '', '', '', '', 'linear,nearestflag', '', '', ''],
-             calwt=[False, False, False, False, False, False, False, False, False])
+             gaintable=gaintables,
+             gainfield=gainfield,
+             spwmap=spwmap,
+             interp=interp,
+             calwt=calwt)
 
     cont_ms = ms[:-3]+"_continuum.ms"
 
@@ -129,3 +152,4 @@ for dir in glob.glob("18A-229*"):
     os.remove('WORKING')
 
     os.chdir(cwd)
+    logprint("Done reprocessing {0}".format(ms))
