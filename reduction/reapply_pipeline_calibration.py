@@ -39,7 +39,7 @@ for dir in glob.glob("18A-229*"):
     fullpathms = os.path.join(dir, ms)
 
     if os.path.exists('done_recalibrating_{0}'.format(ms)):
-        logprint("Skipping {0}".format(ms))
+        logprint("Skipping {0} because it is done".format(ms))
         os.chdir(cwd)
         continue
 
@@ -109,6 +109,8 @@ for dir in glob.glob("18A-229*"):
     interp = ['linear,nearestflag' if 'finalBPcal' in tb else ''
               for tb in gaintables]
     calwt = [False] * ntables
+
+    logprint("Calibrating {0} / {1}".format(dir, ms))
 
     applycal(vis=ms,
              field='"Sgr B2 N Q",J1733-1304,"Sgr B2 DS3 Q","Sgr B2 MS Q","Sgr B2 DS2 Q","Sgr B2 DS1 Q","Sgr B2 S Q","Sgr B2 NM Q",J1744-3116,"1331+305=3C286"',
