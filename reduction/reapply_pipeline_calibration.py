@@ -102,6 +102,12 @@ for dir in glob.glob("18A-229*"):
                       ms+'.averagephasegain.g',
                       ms+'.finalampgaincal.g',
                       ms+'.finalphasegaincal.g']
+    try:
+        swpow_tbl = find_file("*_6.swpow.tbl")
+        gaintables.insert(3, swpow_tbl)
+    except ValueError:
+        pass
+
 
     ntables = len(gaintables)
     gainfield = [''] * ntables

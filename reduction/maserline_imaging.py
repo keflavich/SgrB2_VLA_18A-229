@@ -123,13 +123,43 @@ def so10clean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='SO10_01', spws="56",
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
 
+def nh31414clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1414', spws="2",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+def nh31918clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1918', spws="12",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+def nh31212clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1212', spws="36",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+def nh31313clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1313', spws="18",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+
+def nh31615clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1615', spws="61",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+def nh31716clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1716', spws="42",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+def nh31817clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_1817', spws="26",
+                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+
+
 # K-band
 def h2oclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='H2O', spws={'../18A-229_2018_03_29_T13_19_55.276/18A-229.sb35069722.eb35251855.58206.45698415509.ms': '55',
                                                              '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms': '53',
                                                             },
                    cell='0.1arcsec',
-                   imsize=1000, 
+                   imsize=1000,
                    chanchunks=16,
                    fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
 
@@ -139,7 +169,7 @@ def nh322clean(vis, name, **kwargs):
                          '7',
                          '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms':
                          '5', },
-                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
 
 def nh321clean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='NH3_21',
@@ -147,7 +177,7 @@ def nh321clean(vis, name, **kwargs):
                          '4',
                          '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms':
                          '3', },
-                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
 
 def nh332clean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='NH3_32',
@@ -155,7 +185,7 @@ def nh332clean(vis, name, **kwargs):
                          '3',
                          '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms':
                          '2', },
-                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
 
 def nh311clean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='NH3_11',
@@ -163,7 +193,53 @@ def nh311clean(vis, name, **kwargs):
                          '6',
                          '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35251150.58205.383514664354.ms':
                          '4', },
-                   fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
+
+def nh365clean(vis, name, **kwargs):
+    return myclean(vis=vis[0], name=name, linename='NH3_65',
+                   spws={'../18A-229_2018_03_29_T13_19_55.276/18A-229.sb35069722.eb35251855.58206.45698415509.ms':
+                         '2', },
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
+
+def nh344clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_44',
+                   spws={'../18A-229_2018_03_29_T13_19_55.276/18A-229.sb35069722.eb35251855.58206.45698415509.ms':
+                         '12',
+                         '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35254450.58205.383514664354.ms':
+                         '10', },
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
+
+def nh355clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_55',
+                   spws={'../18A-229_2018_03_29_T13_19_55.276/18A-229.sb35069722.eb35251855.58206.45698415509.ms':
+                         '16',
+                         '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35254450.58205.383514664354.ms':
+                         '14', },
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
+
+def nh377clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_77',
+                   spws={'../18A-229_2018_03_29_T13_19_77.276/18A-229.sb35069722.eb35251877.58206.45698417709.ms':
+                         '26',
+                         '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35254450.58205.383514664354.ms':
+                         '24', },
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
+
+def nh353clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_53',
+                   spws={'../18A-229_2018_03_29_T13_19_53.276/18A-229.sb35069722.eb35251853.58206.45698415309.ms':
+                         '48',
+                         '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35254450.58205.383514664354.ms':
+                         '46', },
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
+
+def nh354clean(vis, name, **kwargs):
+    return myclean(vis=vis, name=name, linename='NH3_54',
+                   spws={'../18A-229_2018_03_29_T13_19_53.276/18A-229.sb35069722.eb35251853.58206.45698415309.ms':
+                         '58',
+                         '../18A-229_2018_03_28_T17_09_22.432/18A-229.sb35069722.eb35254450.58205.383514664354.ms':
+                         '56', },
+                   fields=['Sgr B2 MN K', 'Sgr B2 SDS K'], **kwargs)
 
 
 #  3      EVLA_Q#A1C1#3     128   TOPO   46111.536        62.500      8000.0  46115.5046       10  RR  LL NH3 18-18
