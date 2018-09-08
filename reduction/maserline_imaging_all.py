@@ -47,6 +47,17 @@ from ms_lists import Qmses, Kamses, Kmses
 #nh31615clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
 
 
+#nh322clean(['../'+x for x in Kmses], name='18A-229_combined_zoom', threshold='25mJy',
+#           cell='0.02arcsec',
+#           imsize=500,
+#           phasecenters={'Sgr B2 MN K': 'J2000 17h47m20.178 -28d23m04.109',},
+#           fields=['Sgr B2 MN K'],
+#           savemodel='modelcolumn',
+#           restfreq='23.722633335GHz',
+#           nchan=60,
+#           start='30km/s',
+#          )
+
 #h2oclean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
 nh322clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
 nh311clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
