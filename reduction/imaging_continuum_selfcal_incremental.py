@@ -5,6 +5,7 @@ import numpy as np
 from astropy.io import fits
 import pyregion
 import os
+import shutil
 
 from taskinit import msmdtool, iatool, casalog
 from flagdata_cli import flagdata_cli as flagdata
@@ -44,7 +45,10 @@ re_clear = False
 base_cont_vis = cont_vis = 'continuum_concatenated.ms'
 if not os.path.exists(cont_vis):
     assert concat(vis=fullpath_mses, concatvis=cont_vis)
-selfcal_vis = cont_vis
+
+selfcal_vis = cont_vis = base_cont_vis = 'continuum_concatenated_v2.ms'
+if not os.path.exists(selfcal_vis):
+    shutil.copytree('continuum_concatenated.ms', selfcal_vis)
 
 
 caltables = []
@@ -65,7 +69,7 @@ phasecenter ={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
               "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
              }
 
-field_list = 'Sgr B2 MS Q'
+field_list = ['Sgr B2 MS Q']
 
 
 msmd.open(selfcal_vis)
@@ -76,7 +80,7 @@ for field in field_list:
     casalog.post("Beginning main loop for field: {0}".format(field), origin='imaging_continuum_selfcal_incremental')
     field_nospace = field.replace(" ","")
 
-    selfcal_vis = field_nospace + "_" + base_cont_vis
+    #selfcal_vis = field_nospace + "_" + base_cont_vis
 
     if re_clear:
         clearcal(vis=selfcal_vis,
