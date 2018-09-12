@@ -11,6 +11,7 @@ from spectral_cube import SpectralCube
 from spectral_cube.lower_dimensional_structures import Projection
 
 for fn in glob.glob("*.image.pbcor.fits"):
+    print(fn)
     #if fits.getheader(fn)['NAXIS'] <= 2:
     #    print("Skipped {0} because it wasn't a cube".format(fn))
     #    continue
@@ -68,10 +69,10 @@ for fn in glob.glob("*.image.pbcor.fits"):
                                             u.brightness_temperature(beam_area=beam,
                                                                      frequency=mcube_sn.with_spectral_unit(u.GHz).spectral_axis.mean()))
         mx_masked_K.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked_K.fits")),
-                   overwrite=True)
+                          overwrite=True)
         mx_masked_K.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked_K.png")))
         mx_masked.write('collapse/max/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked.fits")),
-                 overwrite=True)
+                        overwrite=True)
         mx_masked.quicklook('collapse/max/pngs/{0}'.format(fn.replace(".image.pbcor.fits","_max_masked.png")))
 
     argmax = mcube.argmax(axis=0, how='ray')
