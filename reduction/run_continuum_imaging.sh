@@ -17,6 +17,9 @@ echo ${WORK_DIR}
 
 export SCRIPT_DIR="/lustre/aginsbur/sgrb2/18A-229/reduction_scripts/"
 
+# sanity check: script was failing without reason.
+xvfb-run -d casa-prerelease --nogui --nologger -c "from impbcor_cli import impbcor_cli as impbcor; assert(hasattr(impbcor, 'defaults'))"
+
 # casa's python requires a DISPLAY for matplot so create a virtual X server
 #xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_post_repipelining.py')"
 #xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/continuum_imaging_make_selfcal_model.py')"

@@ -13,8 +13,11 @@ from exportfits_cli import exportfits_cli as exportfits
 
 def makefits(myimagebase, cleanup=True):
     if os.path.exists(myimagebase+'.image.tt0'):
-        impbcor(imagename=myimagebase+'.image.tt0', pbimage=myimagebase+'.pb.tt0', outfile=myimagebase+'.image.tt0.pbcor', overwrite=True) # perform PBcorr
-        exportfits(imagename=myimagebase+'.image.tt0.pbcor', fitsimage=myimagebase+'.image.tt0.pbcor.fits', dropdeg=False, overwrite=True) # export the corrected image
+        try:
+            impbcor(imagename=myimagebase+'.image.tt0', pbimage=myimagebase+'.pb.tt0', outfile=myimagebase+'.image.tt0.pbcor', overwrite=True) # perform PBcorr
+            exportfits(imagename=myimagebase+'.image.tt0.pbcor', fitsimage=myimagebase+'.image.tt0.pbcor.fits', dropdeg=False, overwrite=True) # export the corrected image
+        except AttributeError as ex:
+            print(ex)
         exportfits(imagename=myimagebase+'.image.tt1', fitsimage=myimagebase+'.image.tt1.fits', dropdeg=False, overwrite=True) # export the corrected image
         exportfits(imagename=myimagebase+'.pb.tt0', fitsimage=myimagebase+'.pb.tt0.fits', dropdeg=False, overwrite=True) # export the PB image
         exportfits(imagename=myimagebase+'.model.tt0', fitsimage=myimagebase+'.model.tt0.fits', dropdeg=False, overwrite=True) # export the PB image
@@ -30,8 +33,11 @@ def makefits(myimagebase, cleanup=True):
                                'alpha', 'alpha.error'):
                     os.system('rm -rf {0}.{1}'.format(myimagebase, suffix).format(tt=ttsuffix))
     elif os.path.exists(myimagebase+'.image'):
-        impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
-        exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', dropdeg=False, overwrite=True) # export the corrected image
+        try:
+            impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
+            exportfits(imagename=myimagebase+'.image.pbcor', fitsimage=myimagebase+'.image.pbcor.fits', dropdeg=False, overwrite=True) # export the corrected image
+        except AttributeError as ex:
+            print(ex)
         exportfits(imagename=myimagebase+'.pb', fitsimage=myimagebase+'.pb.fits', dropdeg=False, overwrite=True) # export the PB image
         exportfits(imagename=myimagebase+'.model', fitsimage=myimagebase+'.model.fits', dropdeg=False, overwrite=True) # export the PB image
         exportfits(imagename=myimagebase+'.residual', fitsimage=myimagebase+'.residual.fits', dropdeg=False, overwrite=True) # export the PB image

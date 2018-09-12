@@ -8,19 +8,18 @@ import os
 import shutil
 
 from taskinit import msmdtool, iatool, casalog
+
 from flagdata_cli import flagdata_cli as flagdata
 from clearcal_cli import clearcal_cli as clearcal
+from concat_cli import concat_cli as concat
+from bandpass_cli import bandpass_cli as bandpass
+from makemask_cli import makemask_cli as makemask
+from gaincal_cli import gaincal_cli as gaincal
+from applycal_cli import applycal_cli as applycal
+from tclean_cli import tclean_cli as tclean
+from exportfits_cli import exportfits_cli as exportfits
+from importfits_cli import importfits_cli as importfits
 
-from split import split
-from concat import concat
-from bandpass import bandpass
-from makemask import makemask
-from gaincal import gaincal
-from applycal import applycal
-from tclean import tclean
-from exportfits import exportfits
-from importfits import importfits
-from impbcor import impbcor
 import casac
 tb = casac.casac().table()
 ia = iatool()
@@ -31,9 +30,14 @@ sys.path.append(os.getenv('SCRIPT_DIR'))
 from continuum_imaging_general import myclean, makefits
 from continuum_windows import Qmses
 
-
 from astropy.io import fits
 from astropy import wcs
+
+def logprint(string, origin='imaging_continuum_selfcal_incremental',
+             priority='INFO'):
+    print(string)
+    casalog.post(string, origin=origin, priority=priority)
+
 
 mses = list(Qmses.keys())
 
@@ -77,7 +81,8 @@ nspws = msmd.nspw()
 msmd.close()
 
 for field in field_list:
-    casalog.post("Beginning main loop for field: {0}".format(field), origin='imaging_continuum_selfcal_incremental')
+    logprint("Beginning main loop for field: {0}".format(field),
+             origin='imaging_continuum_selfcal_incremental')
     field_nospace = field.replace(" ","")
 
     #selfcal_vis = field_nospace + "_" + base_cont_vis
@@ -206,8 +211,7 @@ for field in field_list:
         threshold = threshold.format(thresholds[field][iternum])
         output = myimagebase = imagename = '{0}_QbandAarray_cont_spws_continuum_cal_clean_{2}terms_robust0_incrementalselfcal{1}'.format(field_nospace, iternum, nterms)
 
-        print("Working on {0}".format(myimagebase))
-        casalog.post("Working on {0}".format(myimagebase), "INFO", "IncrementalSelfcalScript")
+        logprint("Working on {0}".format(myimagebase))
 
         if os.path.exists(imagename+".image.tt0"):
             #mask = 'clean_mask_{0}_{1}.mask'.format(iternum, field_nospace)
@@ -216,24 +220,24 @@ for field in field_list:
             caltable = '{2}_{1}_{0}_{3}.cal'.format(field_nospace, iternum, caltype, solint)
             if not os.path.exists(caltable):
                 print('Does caltable {0} exist? {1}'.format(caltable, os.path.exists(caltable)))
-                print(os.listdir(caltable))
-                print(os.listdir(imagename+".image.tt0"))
-                casalog.post("Calibration table {1} does not exist but image does.  Remove images with "
-                             "suffix {0}".format(imagename, caltable), "SEVERE", "IncrementalSelfcalScript")
+                try:
+                    logprint(os.listdir(caltable))
+                except Exception as ex:
+                    logprint(ex, priority='ERROR')
+                logprint(os.listdir(imagename+".image.tt0"))
+                logprint("Calibration table {1} does not exist but image does.  Remove images with "
+                         "suffix {0}".format(imagename, caltable), priority="SEVERE")
                 raise ValueError("Calibration table {1} does not exist but image does.  Remove images with "
                                  "suffix {0}".format(imagename, caltable))
             caltables.append(caltable)
             calinfo[iternum] = {'combine':combine,}
-            casalog.post("Skipping {0}".format(myimagebase), "INFO", "IncrementalSelfcalScript")
-            casalog.post("caltables set to {0}, calinfo set to {1}"
-                         .format(caltables, calinfo), "INFO",
-                         "IncrementalSelfcalScript")
-            print("Skipping {0}".format(imagename))
+            logprint("Skipping {0}".format(myimagebase))
+            logprint("caltables set to {0}, calinfo set to {1}"
+                     .format(caltables, calinfo))
             continue
 
         if len(caltables) > 0:
-            print("Applying caltables {0}".format(caltables))
-            casalog.post("Applying caltables {0}".format(caltables), "INFO", "IncrementalSelfcalScript")
+            logprint("Applying caltables {0}".format(caltables))
             applycal(vis=selfcal_vis,
                      # use all fields # field=field,
                      gaintable=caltables,
@@ -250,7 +254,7 @@ for field in field_list:
                            'alpha', ):
                 rmfile = "{0}.{1}".format(output, suffix).format(tt=ttsuffix)
                 if os.path.exists(rmfile):
-                    print("Removing {0}".format(rmfile))
+                    logprint("Removing {0}".format(rmfile))
                     os.system('rm -rf {0}'.format(rmfile))
 
         tclean(vis=selfcal_vis,
@@ -308,13 +312,13 @@ for field in field_list:
             flagdata(caltable, mode='clip', clipminmax=[0.5, 2.0], datacolumn='CPARAM')
 
         if not os.path.exists(caltable):
-            casalog.post("Calibration table {0} does not exist".format(caltable), "ERROR", "IncrementalSelfcalScript")
+            logprint("Calibration table {0} does not exist".format(caltable),
+                     priority="ERROR")
             raise ValueError("Calibration table {0} does not exist".format(caltable))
 
         caltables.append(caltable)
         calinfo[iternum] = {'combine':combine,}
-        print("Calibration Information exists for these: {0}".format(calinfo.keys()))
-        casalog.post("Calibration Information exists for these: {0}".format(calinfo.keys()), "INFO", "IncrementalSelfcalScript")
+        logprint("Calibration Information exists for these: {0}".format(calinfo.keys()))
 
         # cleanimage = myimagebase+'.image.tt0'
         # ia.open(cleanimage)
@@ -332,8 +336,8 @@ for field in field_list:
         ia.open(myimagebase+".model.tt0")
         stats = ia.statistics()
         if stats['min'] < 0:
-            print("Negative model component encountered: {0}.".format(stats['min']))
-        print(stats)
+            logprint("Negative model component encountered: {0}.".format(stats['min']))
+        logprint(str(stats))
         ia.close()
 
         #outputvis = selfcal_vis.replace(".ms", "_{1}_selfcal{0}.ms".format(iternum, field_nospace))
@@ -360,7 +364,7 @@ for field in field_list:
             output = myimagebase = imagename = '{0}_QbandAarray_spw{2}_continuum_cal_clean_2terms_robust{robust}_selfcal{1}_final'.format(field_nospace, iternum+1, baseband,
                                                                                                                                           robust=robust)
             if not os.path.exists(imagename+".image.pbcor.fits"):
-                casalog.post("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+                logprint("Cleaning: {0}".format(output))
 
                 tclean(vis=cont_vis,
                        imagename=imagename,
@@ -382,7 +386,7 @@ for field in field_list:
                        savemodel='none',
                        scales=[0,3,9,27],
                       )
-                casalog.post("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+                logprint("FITSing: {0}".format(output))
                 makefits(imagename, cleanup=False)
 
 
@@ -400,7 +404,7 @@ for field in field_list:
             output = myimagebase = imagename = '{0}_QbandAarray_spw{2}_continuum_cal_clean_2terms_robust{robust}_selfcal{1}_final'.format(field_nospace, iternum+1, spw,
                                                                                                                                           robust=robust)
             if not os.path.exists(imagename+".image.pbcor.fits"):
-                casalog.post("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+                logprint("Cleaning: {0}".format(output))
 
                 tclean(vis=selfcal_vis,
                        imagename=imagename,
@@ -422,7 +426,7 @@ for field in field_list:
                        savemodel='none',
                        scales=[0,3,9,27],
                       )
-                casalog.post("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+                logprint("FITSing: {0}".format(output))
                 makefits(imagename, cleanup=True)
 
 
@@ -431,7 +435,7 @@ for field in field_list:
         field_nospace = field.replace(" ","")
         output = myimagebase = imagename = '{0}_QbandAarray_cont_spws_continuum_cal_clean_2terms_robust{robust}_selfcal{1}_final'.format(field_nospace, iternum+1,
                                                                                                                                          robust=robust)
-        casalog.post("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+        logprint("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
 
         for suffix in ('pb', 'weight', 'sumwt', 'psf', 'model', 'mask',
                        'image', 'residual'):
@@ -457,11 +461,11 @@ for field in field_list:
                scales=[0,3,9,27],
                mask=mask,
                selectdata=True)
-        casalog.post("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+        logprint("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
         makefits(myimagebase)
 
         output = myimagebase = imagename = '{0}_QbandAarray_cont_spws_continuum_cal_clean_2terms_noshortbaseline_robust{2}_selfcal{1}_final'.format(field_nospace, iternum+1, robust)
-        casalog.post("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+        logprint("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
 
         for suffix in ('pb', 'weight', 'sumwt', 'psf', 'model', 'mask',
                        'image', 'residual'):
@@ -488,7 +492,7 @@ for field in field_list:
                scales=[0,3,9,27],
                mask=mask,
                selectdata=True)
-        casalog.post("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+        logprint("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
         makefits(myimagebase)
 
 
@@ -497,7 +501,7 @@ for field in field_list:
 
     field_nospace = field.replace(" ","")
     output = myimagebase = imagename = '{0}_QbandAarray_cont_spws_continuum_cal_clean_2terms_supernatural_selfcal{1}_final'.format(field_nospace, iternum+1,)
-    casalog.post("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+    logprint("Cleaning: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
 
     for suffix in ('pb', 'weight', 'sumwt', 'psf', 'model', 'mask',
                    'image', 'residual'):
@@ -524,7 +528,5 @@ for field in field_list:
            scales=[0,3,9,27],
            mask=mask,
            selectdata=True)
-    casalog.post("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
+    logprint("FITSing: {0}".format(output), origin='imaging_continuum_selfcal_incremental')
     makefits(myimagebase)
-
-
