@@ -52,6 +52,7 @@ if not os.path.exists(cont_vis):
 
 selfcal_vis = cont_vis = base_cont_vis = 'continuum_concatenated_v2.ms'
 if not os.path.exists(selfcal_vis):
+    logprint("copying continuum_concatenated.ms into {0}".format(selfcal_vis))
     shutil.copytree('continuum_concatenated.ms', selfcal_vis)
 
 
@@ -61,8 +62,8 @@ calinfo = {}
 thresholds = {'Sgr B2 MS Q': (3.0,2.5,2.0,1.5,1.0,1.0,1.0,0.75,0.75,0.75,0.5,0.5,0.5),
              }
 mask_threshold = {'Sgr B2 MS Q': 4.0,
-                  'Sgr B2 N Q' : 2.0,
-                  'Sgr B2 NM Q' : 4.0,
+                  'Sgr B2 N Q': 2.0,
+                  'Sgr B2 NM Q': 4.0,
                   'Sgr B2 S Q': 2.0,
                  }
 imsize = {'Sgr B2 MS Q': 1000,
@@ -223,7 +224,7 @@ for field in field_list:
                 try:
                     logprint(os.listdir(caltable))
                 except Exception as ex:
-                    logprint(ex, priority='ERROR')
+                    logprint(str(ex), priority='ERROR')
                 logprint(os.listdir(imagename+".image.tt0"))
                 logprint("Calibration table {1} does not exist but image does.  Remove images with "
                          "suffix {0}".format(imagename, caltable), priority="SEVERE")
@@ -333,6 +334,12 @@ for field in field_list:
         # mask = 'clean_mask_{0}_{1}.mask'.format(iternum, field_nospace)
         # exportfits(mask, mask+'.fits', dropdeg=True, overwrite=True)
 
+        if not os.path.exists(myimagebase+".model.tt0"):
+            if os.path.exists(myimagebase+".model.tt0.fits"):
+                importfits(fitsimage=myimagebase+".model.tt0.fits",
+                           imagename=myimagebase+".model.tt0")
+            else:
+                raise IOError("Missing model image file & model FITS image")
         ia.open(myimagebase+".model.tt0")
         stats = ia.statistics()
         if stats['min'] < 0:

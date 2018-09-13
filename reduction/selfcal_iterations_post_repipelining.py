@@ -39,7 +39,9 @@ fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
 
 cont_vis = 'continuum_concatenated.ms'
 if not os.path.exists(cont_vis):
-    assert concat(vis=fullpath_mses, concatvis=cont_vis)
+    assert concat(vis=fullpath_mses, concatvis=cont_vis,
+                  # should be used but isn't freqtol='5MHz',
+                 )
 
 imagename = '18A-229_Q_singlefield_selfcal_iter1'
 myclean(vis=cont_vis,
@@ -94,9 +96,9 @@ if not os.path.exists(caltable):
             field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='10s',
+            solint='30s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
            )
 
 
@@ -158,9 +160,9 @@ if not os.path.exists(caltable):
             field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='10s',
+            solint='30s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
            )
 
 caltable = '18A-229_Q_concatenated_cal_iter2_combinespw.cal'
@@ -170,9 +172,9 @@ if not os.path.exists(caltable):
             field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='10s',
+            solint='30s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
             combine='spw',
            )
 
@@ -185,7 +187,7 @@ if not os.path.exists(caltable):
             refant='',
             solint='30s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
             combine='spw',
            )
 
@@ -264,7 +266,7 @@ if not os.path.exists(caltable):
             refant='',
             solint='20s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
            )
 
 imagename = '18A-229_Q_singlefield_selfcal_iter4'
@@ -308,7 +310,7 @@ if not os.path.exists(caltable):
             refant='',
             solint='20s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
            )
 
 imagename = '18A-229_Q_singlefield_selfcal_iter5'
@@ -343,7 +345,7 @@ if not os.path.exists(caltable):
             refant='',
             solint='20s',
             #uvrange='0~2000klambda',
-            minblperant=3,
+            #minblperant=3,
            )
 
 imagename = '18A-229_Q_singlefield_selfcal_iter6'

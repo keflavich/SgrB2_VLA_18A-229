@@ -182,7 +182,7 @@ for ms in mses:
                     cell='0.01arcsec',
                     scales=[0,3,9,27],
                     niter=10000,
-                    threshold='2mJy',
+                    threshold='3mJy',
                     robust=0.5,
                     savemodel='none',
                     datacolumn='data',
@@ -201,7 +201,7 @@ for ms in mses:
                     cell='0.01arcsec',
                     scales=[0,3,9,27],
                     niter=10000,
-                    threshold='2mJy',
+                    threshold='3mJy',
                     robust=0.5,
                     savemodel='modelcolumn',
                    )
