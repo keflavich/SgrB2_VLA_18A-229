@@ -119,6 +119,7 @@ for field in field_list:
               )
         makefits(imagename)
 
+    if not os.path.exists('cleanbox_mask_{0}.fits'.format(field_nospace)):
         dirtyimage = imagename+'.image.tt0'
 
         if not os.path.exists(dirtyimage):
