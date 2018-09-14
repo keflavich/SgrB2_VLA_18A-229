@@ -5,6 +5,7 @@ import os
 #import runpy
 #runpy.run_path('continuum_imaging_general.py')
 import pyregion
+import numpy as np
 import sys
 assert os.getenv('SCRIPT_DIR') is not None
 sys.path.append(os.getenv('SCRIPT_DIR'))
@@ -101,6 +102,15 @@ if not os.path.exists(caltable):
             #minblperant=3,
            )
 
+# do a purely diagnostic ampcal
+gaincal(vis=cont_vis,
+        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic.cal',
+        gaintype='G',
+        combine='spw,scan,field',
+        solint='inf',
+        calmode='a',
+        solnorm=True)
+
 
 # create a mask
 cleanimagename = imagename+".image.tt0.pbcor"
@@ -151,6 +161,7 @@ myclean(vis=cont_vis,
         threshold='1mJy',
         robust=0.5,
         savemodel='modelcolumn',
+        mask=mask,
        )
 
 caltable = '18A-229_Q_concatenated_cal_iter2.cal'
@@ -202,6 +213,16 @@ if not os.path.exists(caltable):
             #uvrange='0~2000klambda',
             minblperant=3,
            )
+
+# do a purely diagnostic ampcal
+gaincal(vis=cont_vis,
+        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic.cal',
+        gaintype='G',
+        combine='spw,scan,field',
+        solint='inf',
+        calmode='a',
+        solnorm=True)
+
 
 
 tb.open(cont_vis+"/SPECTRAL_WINDOW")
@@ -269,6 +290,16 @@ if not os.path.exists(caltable):
             #minblperant=3,
            )
 
+# do a purely diagnostic ampcal
+gaincal(vis=cont_vis,
+        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic.cal',
+        gaintype='G',
+        combine='spw,scan,field',
+        solint='inf',
+        calmode='a',
+        solnorm=True)
+
+
 imagename = '18A-229_Q_singlefield_selfcal_iter4'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
@@ -313,6 +344,16 @@ if not os.path.exists(caltable):
             #minblperant=3,
            )
 
+# do a purely diagnostic ampcal
+gaincal(vis=cont_vis,
+        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic.cal',
+        gaintype='G',
+        combine='spw,scan,field',
+        solint='inf',
+        calmode='a',
+        solnorm=True)
+
+
 imagename = '18A-229_Q_singlefield_selfcal_iter5'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
@@ -347,6 +388,16 @@ if not os.path.exists(caltable):
             #uvrange='0~2000klambda',
             #minblperant=3,
            )
+
+# do a purely diagnostic ampcal
+gaincal(vis=cont_vis,
+        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic.cal',
+        gaintype='G',
+        combine='spw,scan,field',
+        solint='inf',
+        calmode='a',
+        solnorm=True)
+
 
 imagename = '18A-229_Q_singlefield_selfcal_iter6'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
@@ -393,6 +444,7 @@ tclean(
        interactive=False,
        outframe='LSRK',
        savemodel='none',
+       mask=mask,
       )
 makefits(imagename)
 
@@ -423,5 +475,15 @@ for spw in np.unique(summary['spectral windows']['names']):
            outframe='LSRK',
            savemodel='none',
            scales=[0,3,9,27],
+           mask=mask,
           )
     makefits(imagename, cleanup=False)
+
+# do a purely diagnostic ampcal
+gaincal(vis=cont_vis,
+        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal',
+        gaintype='G',
+        combine='spw,scan,field',
+        solint='inf',
+        calmode='a',
+        solnorm=True)

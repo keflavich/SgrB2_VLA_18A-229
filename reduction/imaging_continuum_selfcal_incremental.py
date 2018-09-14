@@ -3,6 +3,7 @@ Ported from the W51 Q-band self-cal script
 """
 import numpy as np
 from astropy.io import fits
+from astropy import wcs
 import pyregion
 import os
 import shutil
@@ -120,7 +121,7 @@ for field in field_list:
         makefits(imagename)
 
     if not os.path.exists('cleanbox_mask_{0}.fits'.format(field_nospace)):
-        dirtyimage = imagename+'.image.tt0'
+        dirtyimage = imagename+'.image.tt0.pbcor'
 
         if not os.path.exists(dirtyimage):
             if os.path.exists(dirtyimage+".fits"):
@@ -142,13 +143,13 @@ for field in field_list:
         exportfits(mask, mask+'.fits', dropdeg=True, overwrite=True)
 
         exportfits(dirtyimage, dirtyimage+".fits", overwrite=True)
-        reg = pyregion.open('cleanbox_regions_{0}.reg'.format(field_nospace))
-        imghdu = fits.open(dirtyimage+".pbcor.fits")[0]
-        imghdu2 = fits.open(dirtyimage+".fits")[0]
-        mask = reg.get_mask(imghdu)[None, None, :, :]
-        imghdu2.data = mask.astype('int16')
-        imghdu2.header['BITPIX'] = 16
-        imghdu2.writeto('cleanbox_mask_{0}.fits'.format(field_nospace), clobber=True)
+        reg = pyregion.open('cleanbox_regions_SgrB2.reg')
+        imghdu = fits.open(dirtyimage+".fits")[0]
+        hdr = wcs.WCS(imghdu).celestial.to_header()
+        mask = reg.get_mask(header=hdr, shape=imghdu.data.squeeze().shape)[None, None, :, :]
+        imghdu.data = mask.astype('int16')
+        imghdu.header['BITPIX'] = 16
+        imghdu.writeto('cleanbox_mask_{0}.fits'.format(field_nospace), overwrite=True)
         importfits(fitsimage='cleanbox_mask_{0}.fits'.format(field_nospace),
                    imagename=cleanbox_mask_image,
                    overwrite=True)
@@ -320,6 +321,18 @@ for field in field_list:
                      solnorm=True)
             # avoid extreme outliers: assume anything going more than 2x in either direction is wrong
             flagdata(caltable, mode='clip', clipminmax=[0.5, 2.0], datacolumn='CPARAM')
+
+        # do a purely diagnostic gaincal
+        gaincal(vis=selfcal_vis,
+                caltable='ampcal_diagnostic_iter{0}.cal'.format(iternum),
+                gaintype='G',
+                combine='spw,scan,field',
+                solint='inf',
+                calmode='a',
+                gaintable=caltables,
+                spwmap=[[0]*nspws if calinfo[ii]['combine']=='spw' else [] for ii in range(len(caltables))],
+                interp='linear,linear',
+                solnorm=True)
 
         if not os.path.exists(caltable):
             logprint("Calibration table {0} does not exist".format(caltable),
