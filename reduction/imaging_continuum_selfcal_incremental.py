@@ -120,6 +120,14 @@ for field in field_list:
         makefits(imagename)
 
         dirtyimage = imagename+'.image.tt0'
+
+        if not os.path.exists(dirtyimage):
+            if os.path.exists(dirtyimage+".fits"):
+                importfits(fitsimage=dirtyimage+".fits",
+                           imagename=dirtyimage)
+            else:
+                raise IOError("Missing dirty image file & dirty FITS image")
+
         ia.open(dirtyimage)
         ia.calcmask(mask=dirtyimage+" > {0}".format(mask_threshold[field]/1e3),
                     name='dirty_mask_{0}'.format(field_nospace))
