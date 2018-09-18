@@ -20,6 +20,7 @@ from applycal_cli import applycal_cli as applycal
 from tclean_cli import tclean_cli as tclean
 from exportfits_cli import exportfits_cli as exportfits
 from importfits_cli import importfits_cli as importfits
+from rmtables_cli import rmtables_cli as rmtables
 
 import casac
 tb = casac.casac().table()
@@ -45,7 +46,7 @@ mses = list(Qmses.keys())
 fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
                  for ms in mses if ms in Qmses]
 
-re_clear = False
+re_clear = True
 
 base_cont_vis = cont_vis = 'continuum_concatenated.ms'
 if not os.path.exists(cont_vis):
@@ -292,6 +293,11 @@ for field in field_list:
                mask=mask,
               )
         makefits(myimagebase)
+
+        modelim = fits.open(imagename+".model.tt0.fits")
+        mx = modelim[0].data.max()
+        logprint("max value in model: {0}".format(mx))
+        assert mx > 0
 
         caltable = '{2}_{1}_{0}.cal'.format(field_nospace, iternum, caltype)
         rmtables([caltable])

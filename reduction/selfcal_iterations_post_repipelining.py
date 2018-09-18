@@ -44,25 +44,8 @@ if not os.path.exists(cont_vis):
                   # should be used but isn't freqtol='5MHz',
                  )
 
-imagename = '18A-229_Q_singlefield_selfcal_iter1'
-myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
-        spws='',
-        imsize=1000,
-        phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
-                      "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
-                      "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
-                      "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                     },
-        cell='0.01arcsec',
-        name=imagename,
-        niter=10000,
-        threshold='2mJy',
-        scales=[0,3,9,27],
-        robust=0.5,
-        savemodel='modelcolumn',
-       )
-imagename = '18A-229_Q_mosaic_selfcal_iter1'
+
+imagename = '18A-229_Q_mosaic_selfcal_iter0_dirty'
 if not os.path.exists(imagename+".image.tt0.pbcor"):
     # do a full-mosaic clean to enable mask creation
     tclean(
@@ -73,8 +56,8 @@ if not os.path.exists(imagename+".image.tt0.pbcor"):
            imsize=[9000,9000],
            cell='0.02arcsec',
            imagename=imagename,
-           niter=10000,
-           threshold='2mJy',
+           niter=0,
+           threshold='1000mJy',
            robust=0.5,
            gridder='mosaic',
            scales=[0,3,9,27],
@@ -89,6 +72,62 @@ if not os.path.exists(imagename+".image.tt0.pbcor"):
           )
     makefits(imagename)
 
+
+# create a mask based on region selection (no thresholding here)
+dirtyimagename = imagename+".image.tt0.pbcor"
+exportfits(dirtyimagename, dirtyimagename+".fits", overwrite=True)
+reg = pyregion.open('cleanbox_regions_SgrB2.reg')
+imghdu = fits.open(dirtyimagename+".fits")[0]
+#mask = reg.get_mask(imghdu)[None, None, :, :]
+mask = reg.get_mask(header=wcs.WCS(imghdu.header).celestial.to_header(),
+                    shape=imghdu.data.shape[2:])
+imghdu.data = mask.astype('int16')
+imghdu.header['BITPIX'] = 16
+imghdu.writeto('cleanbox_mask_SgrB2.fits', clobber=True)
+cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
+importfits(fitsimage='cleanbox_mask_SgrB2.fits',
+           imagename=cleanbox_mask_image,
+           overwrite=True)
+ia.open(cleanbox_mask_image)
+ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
+            name='cleanbox_mask')
+
+ia.close()
+cleanbox_mask = 'cleanbox_mask.mask'
+makemask(mode='copy', inpimage=cleanbox_mask_image,
+         inpmask=cleanbox_mask_image+":cleanbox_mask",
+         output=cleanbox_mask,
+         overwrite=True)
+
+mask = cleanbox_mask_image
+
+
+
+
+
+
+
+
+
+imagename = '18A-229_Q_singlefield_selfcal_iter1'
+myclean(vis=cont_vis,
+        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        spws='',
+        imsize=1000,
+        phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
+                      "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
+                      "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
+                      "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
+                     },
+        cell='0.01arcsec',
+        name=imagename,
+        niter=10000,
+        threshold='3mJy',
+        scales=[0,3,9,27],
+        robust=0.5,
+        savemodel='modelcolumn',
+        mask=mask,
+       )
 
 caltable = '18A-229_Q_concatenated_cal_iter1.cal'
 if not os.path.exists(caltable):
@@ -140,7 +179,7 @@ makemask(mode='copy', inpimage=cleanbox_mask_image,
 mask = cleanbox_mask_image
 
 imagename = '18A-229_Q_singlefield_selfcal_iter2'
-if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*', spwmap=[], parang=True,)
@@ -158,7 +197,7 @@ myclean(vis=cont_vis,
         name=imagename,
         scales=[0,3,9,27],
         niter=10000,
-        threshold='1mJy',
+        threshold='2mJy',
         robust=0.5,
         savemodel='modelcolumn',
         mask=mask,

@@ -24,7 +24,7 @@ xvfb-run -d casa-prerelease --nogui --nologger -c "from impbcor_cli import impbc
 #xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/flagging.py')"
 #xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_post_repipelining.py')"
 #xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/continuum_imaging_make_selfcal_model.py')"
-#xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_iterations_post_repipelining.py')"
+xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/selfcal_iterations_post_repipelining.py')"
 # the single-field selfcal script ported from W51
-xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/imaging_continuum_selfcal_incremental.py')"
+#xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/imaging_continuum_selfcal_incremental.py')"
 
