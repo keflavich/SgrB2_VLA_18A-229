@@ -12,6 +12,7 @@ from continuum_windows import Qmses
 
 from tclean_cli import tclean_cli as tclean
 from flagdata_cli import flagdata_cli as flagdata
+from clearcal_cli import clearcal_cli as clearcal
 from ft_cli import ft_cli as ft
 from gaincal_cli import gaincal_cli as gaincal
 from applycal_cli import applycal_cli as applycal

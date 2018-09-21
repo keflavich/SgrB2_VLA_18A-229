@@ -45,7 +45,7 @@ if not os.path.exists(raw_and_corr_vis):
     assert concat(vis=fullpath_mses, concatvis=raw_and_corr_vis,
                   # should be used but isn't freqtol='5MHz',
                  )
-cont_vis = 'continuum_concatenated_selfcal.ms'
+cont_vis = 'continuum_concatenated_selfcal_wterms.ms'
 if not os.path.exists(cont_vis):
     assert split(vis=raw_and_corr_vis, outputvis=cont_vis,
                  datacolumn='corrected')
@@ -118,7 +118,7 @@ mask = cleanbox_mask_image
 
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter1'
+imagename = '18A-229_Q_singlefield_selfcal_iter1_wterms'
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
@@ -130,15 +130,17 @@ myclean(vis=cont_vis,
                      },
         cell='0.01arcsec',
         name=imagename,
+        gridder='wproject',
+        wprojplanes=64,
         niter=10000,
         threshold='3mJy',
-        scales=[0,3,9,27],
+        scales=[0,3,9],
         robust=0.5,
         savemodel='modelcolumn',
         mask=mask,
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter1.cal'
+caltable = '18A-229_Q_concatenated_cal_iter1_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -153,7 +155,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic_wterms.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='inf',
@@ -189,7 +191,7 @@ gaincal(vis=cont_vis,
 # 
 # mask = cleanbox_mask_image
 
-imagename = '18A-229_Q_singlefield_selfcal_iter2'
+imagename = '18A-229_Q_singlefield_selfcal_iter2_wterms'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -206,15 +208,17 @@ myclean(vis=cont_vis,
                      },
         cell='0.01arcsec',
         name=imagename,
-        scales=[0,3,9,27],
+        scales=[0,3,9],
         niter=10000,
+        gridder='wproject',
+        wprojplanes=64,
         threshold='2mJy',
         robust=0.5,
         savemodel='modelcolumn',
         mask=mask,
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter2.cal'
+caltable = '18A-229_Q_concatenated_cal_iter2_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -226,20 +230,7 @@ if not os.path.exists(caltable):
             #minblperant=3,
            )
 
-caltable = '18A-229_Q_concatenated_cal_iter2_combinespw.cal'
-if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
-            caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
-            calmode='p',
-            refant='',
-            solint='30s',
-            #uvrange='0~2000klambda',
-            #minblperant=3,
-            combine='spw',
-           )
-
-caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -252,7 +243,20 @@ if not os.path.exists(caltable):
             combine='spw',
            )
 
-caltable = '18A-229_Q_concatenated_cal_iter2_30s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s_wterms.cal'
+if not os.path.exists(caltable):
+    gaincal(vis=cont_vis,
+            caltable=caltable,
+            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            calmode='p',
+            refant='',
+            solint='30s',
+            #uvrange='0~2000klambda',
+            #minblperant=3,
+            combine='spw',
+           )
+
+caltable = '18A-229_Q_concatenated_cal_iter2_30s_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -266,7 +270,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic_wterms.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='inf',
@@ -279,7 +283,7 @@ tb.open(cont_vis+"/SPECTRAL_WINDOW")
 nspw = len(tb.getcol('NAME'))
 tb.close()
 
-imagename = '18A-229_Q_singlefield_selfcal_iter3'
+imagename = '18A-229_Q_singlefield_selfcal_iter3_wterms'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -320,7 +324,9 @@ myclean(vis=cont_vis,
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
-        scales=[0,3,9,27],
+        gridder='wproject',
+        wprojplanes=64,
+        scales=[0,3,9],
         threshold='1mJy',
         robust=0.5,
         savemodel='modelcolumn',
@@ -328,7 +334,7 @@ myclean(vis=cont_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter3_20s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter3_20s_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -342,7 +348,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic_wterms.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='inf',
@@ -350,7 +356,7 @@ gaincal(vis=cont_vis,
         solnorm=True)
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter4'
+imagename = '18A-229_Q_singlefield_selfcal_iter4_wterms'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -375,7 +381,9 @@ myclean(vis=selfcal_split_vis,
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
-        scales=[0,3,9,27],
+        gridder='wproject',
+        wprojplanes=64,
+        scales=[0,3,9],
         threshold='1mJy',
         robust=0.5,
         savemodel='modelcolumn',
@@ -383,7 +391,7 @@ myclean(vis=selfcal_split_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter4_20s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter4_20s_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
@@ -397,7 +405,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic_wterms.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='inf',
@@ -405,7 +413,7 @@ gaincal(vis=cont_vis,
         solnorm=True)
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter5'
+imagename = '18A-229_Q_singlefield_selfcal_iter5_wterms'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
     gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
@@ -422,13 +430,15 @@ myclean(vis=selfcal_split_vis,
         spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
         threshold='1mJy',
-        scales=[0,3,9,27],
+        gridder='wproject',
+        wprojplanes=64,
+        scales=[0,3,9],
         robust=0.5,
         mask=mask,
         savemodel='modelcolumn',
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter5_20s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter5_20s_wterms.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
@@ -442,7 +452,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic_wterms.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='inf',
@@ -450,7 +460,7 @@ gaincal(vis=cont_vis,
         solnorm=True)
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter6'
+imagename = '18A-229_Q_singlefield_selfcal_iter6_wterms'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
@@ -469,7 +479,9 @@ myclean(vis=selfcal_split_vis,
         threshold='1mJy',
         robust=0.5,
         mask=mask,
-        scales=[0,3,9,27],
+        scales=[0,3,9],
+        gridder='wproject',
+        wprojplanes=64,
         savemodel='modelcolumn',
        )
 
@@ -486,7 +498,7 @@ tclean(
        threshold='1mJy',
        robust=0.5,
        gridder='mosaic',
-       scales=[0,3,9,27],
+       scales=[0,3,9],
        deconvolver='mtmfs',
        specmode='mfs',
        nterms=2,
@@ -504,7 +516,7 @@ msmd.open(selfcal_split_vis)
 summary = msmd.summary()
 msmd.close()
 for spw in np.unique(summary['spectral windows']['names']):
-    imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_spw{0}'.format(spw)
+    imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_wterms_spw{0}'.format(spw)
     tclean(vis=cont_vis,
            imagename=imagename,
            field="Sgr B2 NM Q,Sgr B2 MS Q",
@@ -532,7 +544,7 @@ for spw in np.unique(summary['spectral windows']['names']):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic_wterms.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='inf',

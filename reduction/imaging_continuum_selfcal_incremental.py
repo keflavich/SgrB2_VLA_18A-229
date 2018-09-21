@@ -11,7 +11,6 @@ import shutil
 from taskinit import msmdtool, iatool, casalog
 
 from flagdata_cli import flagdata_cli as flagdata
-from clearcal_cli import clearcal_cli as clearcal
 from concat_cli import concat_cli as concat
 from bandpass_cli import bandpass_cli as bandpass
 from makemask_cli import makemask_cli as makemask
@@ -21,6 +20,7 @@ from tclean_cli import tclean_cli as tclean
 from exportfits_cli import exportfits_cli as exportfits
 from importfits_cli import importfits_cli as importfits
 from rmtables_cli import rmtables_cli as rmtables
+from split_cli import split_cli as split
 
 import casac
 tb = casac.casac().table()
@@ -46,17 +46,15 @@ mses = list(Qmses.keys())
 fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
                  for ms in mses if ms in Qmses]
 
-re_clear = True
-
-base_cont_vis = cont_vis = 'continuum_concatenated.ms'
+raw_and_corr_vis = 'continuum_concatenated_raw_and_corr.ms'
+if not os.path.exists(raw_and_corr_vis):
+    assert concat(vis=fullpath_mses, concatvis=raw_and_corr_vis,
+                  # should be used but isn't freqtol='5MHz',
+                 )
+selfcal_vis = cont_vis = base_cont_vis = 'continuum_concatenated_selfcalincremental.ms'
 if not os.path.exists(cont_vis):
-    assert concat(vis=fullpath_mses, concatvis=cont_vis)
-
-selfcal_vis = cont_vis = base_cont_vis = 'continuum_concatenated_v2.ms'
-if not os.path.exists(selfcal_vis):
-    logprint("copying continuum_concatenated.ms into {0}".format(selfcal_vis))
-    shutil.copytree('continuum_concatenated.ms', selfcal_vis)
-
+    assert split(vis=raw_and_corr_vis, outputvis=cont_vis,
+                 datacolumn='corrected')
 
 caltables = []
 calinfo = {}
@@ -90,11 +88,6 @@ for field in field_list:
 
     #selfcal_vis = field_nospace + "_" + base_cont_vis
 
-    if re_clear:
-        clearcal(vis=selfcal_vis,
-                 # use all fields field=field
-                )
-
     # create a dirty image for masking
     cleanbox_mask_image = 'cleanbox_mask_{0}.image'.format(field_nospace)
     imagename = '{0}_QbandAarray_cont_spws_continuum_cal_dirty_2terms_robust0'.format(field_nospace)
@@ -102,6 +95,7 @@ for field in field_list:
         tclean(vis=selfcal_vis,
                imagename=imagename,
                # use all fields # field=field,
+               field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
                spw='',
                weighting='briggs',
                robust=0.0,
@@ -272,6 +266,7 @@ for field in field_list:
         tclean(vis=selfcal_vis,
                imagename=imagename,
                # use all fields # field=field,
+               field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
                spw='',
                weighting='briggs',
                robust=0.0,

@@ -7,6 +7,7 @@ import datetime
 import os
 import glob
 
+from immath_cli import immath_cli as immath
 from tclean_cli import tclean_cli as tclean
 from impbcor_cli import impbcor_cli as impbcor
 from exportfits_cli import exportfits_cli as exportfits
@@ -31,7 +32,9 @@ def makefits(myimagebase, cleanup=True):
                 for suffix in ('pb{tt}', 'weight', 'sumwt{tt}', 'psf{tt}',
                                'model{tt}', 'mask', 'image{tt}', 'residual{tt}',
                                'alpha', 'alpha.error'):
-                    os.system('rm -rf {0}.{1}'.format(myimagebase, suffix).format(tt=ttsuffix))
+                    # keep the model around
+                    if not suffix.format(tt=ttsuffix) == 'model.tt0':
+                        os.system('rm -rf {0}.{1}'.format(myimagebase, suffix).format(tt=ttsuffix))
     elif os.path.exists(myimagebase+'.image'):
         try:
             impbcor(imagename=myimagebase+'.image', pbimage=myimagebase+'.pb', outfile=myimagebase+'.image.pbcor', overwrite=True) # perform PBcorr
@@ -63,10 +66,13 @@ def myclean(
     threshold='0.75mJy',
     robust=0.5,
     savemodel='none',
+    gridder='standard',
     phasecenters=None,
     mask='',
     scales=[],
     datacolumn='corrected',
+    noneg=True,
+    cleanup=True,
     **kwargs
 ):
     for field in fields:
@@ -90,7 +96,7 @@ def myclean(
                           threshold=threshold,
                           phasecenter=phasecenter,
                           robust=robust,
-                          gridder='standard',
+                          gridder=gridder,
                           deconvolver='mtmfs',
                           specmode='mfs',
                           nterms=2,
@@ -104,4 +110,34 @@ def myclean(
                           mask=mask,
                           **kwargs
                          )
-            makefits(imagename)
+            makefits(imagename, cleanup=cleanup)
+        if noneg:
+            noneg_model(imagename+".model.tt0", ms=vis,
+                        gridder=gridder,
+                        robust=robust,
+                        scales=scales,
+                        **kwargs
+                       )
+
+
+def noneg_model(modelname, ms, **kwargs):
+    """
+    Given a model image, set all model components positive, then ft them into
+    the ms's model column
+    """
+    immath(imagename=modelname,
+           expr='iif(IM0<0, 0.0, IM0)',
+           outfile=modelname+".positive",
+          )
+
+    tclean(vis=ms,
+           startmodel=modelname+".positive",
+           niter=0,
+           deconvolver='mtmfs',
+           specmode='mfs',
+           nterms=1,
+           calcpsf=False,
+           calcres=False,
+           interactive=False,
+           **kwargs
+          )
