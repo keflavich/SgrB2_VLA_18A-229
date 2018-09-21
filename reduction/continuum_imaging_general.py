@@ -139,5 +139,6 @@ def noneg_model(modelname, ms, **kwargs):
            calcpsf=False,
            calcres=False,
            interactive=False,
+           savemodel='modelcolumn',
            **kwargs
           )
