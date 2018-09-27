@@ -1,5 +1,5 @@
 """
-Self-calibrate the Q-band data on maps made from the 'good' dates.
+Full-on self-calibration using the individually already twice self-calibrated data...
 """
 import os
 #import runpy
@@ -37,24 +37,21 @@ from astropy import wcs
 
 mses = list(Qmses.keys())
 
-fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
+
+fullpath_mses = ['../' + ms[:-3] + "_continuum_split_for_selfcal.ms"
                  for ms in mses if ms in Qmses]
 
-raw_and_corr_vis = 'continuum_concatenated_raw_and_corr.ms'
-if not os.path.exists(raw_and_corr_vis):
-    assert concat(vis=fullpath_mses, concatvis=raw_and_corr_vis,
-                  # should be used but isn't freqtol='5MHz',
-                 )
-cont_vis = 'continuum_concatenated_selfcal.ms'
-if not os.path.exists(cont_vis):
-    assert split(vis=raw_and_corr_vis, outputvis=cont_vis,
-                 datacolumn='corrected')
-
-# this is OK because there should be no corrected column
-clearcal(vis=cont_vis, addmodel=True)
+cont_vis = []
+for ms in fullpath_mses:
+    splitagain = ms[-3:] + "_wtermmerge.ms"
+    if not os.path.exists(splitagain):
+        assert split(vis=ms, outputvis=splitagain,
+                     datacolumn='corrected')
+    cont_vis.append(splitagain)
 
 
-imagename = '18A-229_Q_mosaic_selfcal_iter0_dirty'
+
+imagename = '18A-229_Q_mosaic_selfcal_wtermmerge_iter0_dirty'
 if not os.path.exists(imagename+".image.tt0.pbcor"):
     # do a full-mosaic clean to enable mask creation
     tclean(
@@ -68,8 +65,7 @@ if not os.path.exists(imagename+".image.tt0.pbcor"):
            niter=0,
            threshold='1000mJy',
            robust=0.5,
-           gridder='mosaic',
-           scales=[0,3,9],
+           gridder='wproject',
            deconvolver='mtmfs',
            specmode='mfs',
            nterms=2,
@@ -118,7 +114,7 @@ mask = cleanbox_mask_image
 
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter1'
+imagename = '18A-229_Q_singlefield_selfcal_iter1_wtermmerge'
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
@@ -130,6 +126,8 @@ myclean(vis=cont_vis,
                      },
         cell='0.01arcsec',
         name=imagename,
+        gridder='wproject',
+        wprojplanes=64,
         niter=10000,
         threshold='3mJy',
         scales=[0,3,9],
@@ -138,11 +136,11 @@ myclean(vis=cont_vis,
         mask=mask,
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter1.cal'
+caltable = '18A-229_Q_concatenated_cal_iter1_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='60s',
@@ -153,10 +151,10 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
-        solint='inf',
+        solint='120s',
         calmode='a',
         solnorm=True)
 
@@ -189,7 +187,7 @@ gaincal(vis=cont_vis,
 # 
 # mask = cleanbox_mask_image
 
-imagename = '18A-229_Q_singlefield_selfcal_iter2'
+imagename = '18A-229_Q_singlefield_selfcal_iter2_wtermmerge'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -208,68 +206,33 @@ myclean(vis=cont_vis,
         name=imagename,
         scales=[0,3,9],
         niter=10000,
+        gridder='wproject',
+        wprojplanes=64,
         threshold='2mJy',
         robust=0.5,
         savemodel='modelcolumn',
         mask=mask,
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter2.cal'
-if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
-            caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
-            calmode='p',
-            refant='',
-            solint='30s',
-            #uvrange='0~2000klambda',
-            #minblperant=3,
-           )
 
-caltable = '18A-229_Q_concatenated_cal_iter2_combinespw.cal'
+caltable = '18A-229_Q_concatenated_cal_iter2_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='30s',
-            #uvrange='0~2000klambda',
-            #minblperant=3,
-            combine='spw',
-           )
-
-caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s.cal'
-if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
-            caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
-            calmode='p',
-            refant='',
-            solint='30s',
-            #uvrange='0~2000klambda',
-            #minblperant=3,
-            combine='spw',
-           )
-
-caltable = '18A-229_Q_concatenated_cal_iter2_30s.cal'
-if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
-            caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
-            calmode='p',
-            refant='',
-            solint='30s',
+            solint='60s',
             #uvrange='0~2000klambda',
             #minblperant=3,
            )
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
-        solint='inf',
+        solint='120s',
         calmode='a',
         solnorm=True)
 
@@ -279,7 +242,7 @@ tb.open(cont_vis+"/SPECTRAL_WINDOW")
 nspw = len(tb.getcol('NAME'))
 tb.close()
 
-imagename = '18A-229_Q_singlefield_selfcal_iter3'
+imagename = '18A-229_Q_singlefield_selfcal_iter3_wtermmerge'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -288,25 +251,6 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
              parang=True,)
 
 
-outlierfile = """# Outlier File
-imagename={imname}_M
-phasecenter=J2000 17h47m20.167 -28d23m04.337
-imsize=[1000,1000]
-
-
-imagename={imname}_N
-phasecenter=J2000 17h47m19.837 -28d22m18.867
-imsize=[1000,1000]
-
-imagename={imname}_Z
-phasecenter=J2000 17h47m20.040 -28d22m41.397
-imsize=[500,500]
-
-imagename={imname}_S
-phasecenter=J2000 17h47m20.455 -28d23m45.067
-imsize=[1000,1000]""".format(imname=imagename)
-with open("outlierfile.txt","w") as fh:
-    fh.write(outlierfile)
 
 myclean(vis=cont_vis,
         fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
@@ -320,6 +264,8 @@ myclean(vis=cont_vis,
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
+        gridder='wproject',
+        wprojplanes=64,
         scales=[0,3,9],
         threshold='1mJy',
         robust=0.5,
@@ -328,29 +274,29 @@ myclean(vis=cont_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter3_20s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter3_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='20s',
+            solint='60s',
             #uvrange='0~2000klambda',
             #minblperant=3,
            )
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
-        solint='inf',
+        solint='120s',
         calmode='a',
         solnorm=True)
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter4'
+imagename = '18A-229_Q_singlefield_selfcal_iter4_wtermmerge'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
@@ -364,7 +310,7 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
 selfcal_split_vis = cont_vis
 
 myclean(vis=selfcal_split_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -375,6 +321,8 @@ myclean(vis=selfcal_split_vis,
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
+        gridder='wproject',
+        wprojplanes=64,
         scales=[0,3,9],
         threshold='1mJy',
         robust=0.5,
@@ -383,32 +331,32 @@ myclean(vis=selfcal_split_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter4_20s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter4_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='20s',
+            solint='60s',
             #uvrange='0~2000klambda',
             #minblperant=3,
            )
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
-        solint='inf',
+        solint='120s',
         calmode='a',
         solnorm=True)
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter5'
+imagename = '18A-229_Q_singlefield_selfcal_iter5_wtermmerge'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
-    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
+    gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
         # apply the self-calibrations to the rest of the data
         applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
@@ -422,37 +370,39 @@ myclean(vis=selfcal_split_vis,
         spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
         threshold='1mJy',
+        gridder='wproject',
+        wprojplanes=64,
         scales=[0,3,9],
         robust=0.5,
         mask=mask,
         savemodel='modelcolumn',
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter5_20s.cal'
+caltable = '18A-229_Q_concatenated_cal_iter5_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
-            solint='20s',
+            solint='60s',
             #uvrange='0~2000klambda',
             #minblperant=3,
            )
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
-        solint='inf',
+        solint='120s',
         calmode='a',
         solnorm=True)
 
 
-imagename = '18A-229_Q_singlefield_selfcal_iter6'
+imagename = '18A-229_Q_singlefield_selfcal_iter6_wtermmerge'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
-    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
+    gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
         # apply the self-calibrations to the rest of the data
         applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
@@ -462,16 +412,16 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
                  parang=True,)
 
 
-# fullfield cleans: can't use mask w/ DS
 myclean(vis=selfcal_split_vis,
         name=imagename,
         spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
-        mask=mask,
         threshold='1mJy',
         robust=0.5,
+        mask=mask,
         scales=[0,3,9],
+        gridder='wproject',
+        wprojplanes=64,
         savemodel='modelcolumn',
        )
 
@@ -506,7 +456,7 @@ msmd.open(selfcal_split_vis)
 summary = msmd.summary()
 msmd.close()
 for spw in np.unique(summary['spectral windows']['names']):
-    imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_spw{0}'.format(spw)
+    imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_wtermmerge_spw{0}'.format(spw)
     tclean(vis=cont_vis,
            imagename=imagename,
            field="Sgr B2 NM Q,Sgr B2 MS Q",
@@ -527,16 +477,16 @@ for spw in np.unique(summary['spectral windows']['names']):
            interactive=False,
            outframe='LSRK',
            savemodel='none',
-           scales=[0,3,9],
+           scales=[0,3,9,27],
            mask=mask,
           )
     makefits(imagename, cleanup=False)
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal',
+        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
-        solint='inf',
+        solint='120s',
         calmode='a',
         solnorm=True)

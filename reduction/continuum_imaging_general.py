@@ -101,7 +101,7 @@ def myclean(
                           specmode='mfs',
                           nterms=2,
                           weighting='briggs',
-                          pblimit=0.2,
+                          pblimit=0.1,
                           interactive=False,
                           outframe='LSRK',
                           datacolumn=datacolumn,
@@ -112,7 +112,9 @@ def myclean(
                          )
             makefits(imagename, cleanup=cleanup)
         if noneg:
-            noneg_model(imagename+".model.tt0", ms=vis,
+            noneg_model(modelname=imagename+".model.tt0",
+                        ms=vis,
+                        imagename=imagename,
                         gridder=gridder,
                         robust=robust,
                         scales=scales,
@@ -120,7 +122,7 @@ def myclean(
                        )
 
 
-def noneg_model(modelname, ms, **kwargs):
+def noneg_model(modelname, ms, imagename, **kwargs):
     """
     Given a model image, set all model components positive, then ft them into
     the ms's model column
@@ -129,8 +131,11 @@ def noneg_model(modelname, ms, **kwargs):
            expr='iif(IM0<0, 0.0, IM0)',
            outfile=modelname+".positive",
           )
+    if os.path.exists(modelname):
+        os.rename(modelname, modelname+".old")
 
     tclean(vis=ms,
+           imagename=imagename,
            startmodel=modelname+".positive",
            niter=0,
            deconvolver='mtmfs',
