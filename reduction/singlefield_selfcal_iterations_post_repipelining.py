@@ -40,6 +40,10 @@ mses = list(Qmses.keys())
 fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
                  for ms in mses if ms in Qmses]
 
+def myprint(x):
+    print(x)
+    casalog.post(x, origin='singlefield')
+
 
 selfcal_mses = {}
 for ms in fullpath_mses:
@@ -48,16 +52,16 @@ for ms in fullpath_mses:
         split(vis=ms, outputvis=outms,
               datacolumn='corrected', field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q")
     name = ms[16:21]
-    print(name)
+    myprint(name)
     selfcal_mses[name] = outms
 
-print(selfcal_mses)
+myprint(selfcal_mses)
 cont_vis = selfcal_mses['03_03']
 
 for msname, cont_vis in selfcal_mses.items():
     # this is OK because there should be no corrected column
     #clearcal(vis=cont_vis, addmodel=True)
-    print("Beginning work on {0}".format(msname))
+    myprint("Beginning work on {0}".format(msname))
 
     if msname == '03_06':
         if 'T12' in cont_vis:
@@ -98,9 +102,13 @@ for msname, cont_vis in selfcal_mses.items():
               )
         makefits(imagename)
     else:
-        # assume it's been done!
-        print("Skipping {0}".format(msname))
-        continue
+        iter6name = '18A-229_{msname}_Q_mosaic_selfcal_iter6'.format(msname=msname)
+        if os.path.exists(iter6name+".image.tt0.pbcor.fits"):
+            # assume it's been done!
+            myprint("Skipping {0}".format(msname))
+            continue
+        else:
+            myprint("Continuing {0} where it left off".format(msname))
 
 
     cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
