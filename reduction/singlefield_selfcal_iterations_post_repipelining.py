@@ -42,7 +42,7 @@ fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
 
 def myprint(x):
     print(x)
-    casalog.post(x, origin='singlefield')
+    casalog.post(str(x), origin='singlefield')
 
 
 selfcal_mses = {}
