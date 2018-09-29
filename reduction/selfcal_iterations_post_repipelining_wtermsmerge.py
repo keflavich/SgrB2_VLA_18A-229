@@ -43,7 +43,7 @@ fullpath_mses = ['../' + ms[:-3] + "_continuum_split_for_selfcal.ms"
 
 cont_vis = []
 for ms in fullpath_mses:
-    splitagain = ms[-3:] + "_wtermmerge.ms"
+    splitagain = ms[:-3] + "_wtermmerge.ms"
     if not os.path.exists(splitagain):
         assert split(vis=ms, outputvis=splitagain,
                      datacolumn='corrected')
@@ -468,6 +468,8 @@ for spw in np.unique(summary['spectral windows']['names']):
            threshold='1mJy',
            robust=0.5,
            gridder='awproject',
+           rotatepastep=5.0,
+           wprojplanes=64,
            conjbeams=True,
            deconvolver='multiscale',
            specmode='mfs',
