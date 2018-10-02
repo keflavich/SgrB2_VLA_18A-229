@@ -51,12 +51,21 @@ for ms in fullpath_mses:
     if not os.path.exists(outms):
         split(vis=ms, outputvis=outms,
               datacolumn='corrected', field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q")
-    name = ms[16:21]
-    myprint(name)
-    selfcal_mses[name] = outms
+    msname = ms[16:21]
+    if msname == '03_06':
+        if 'T12' in ms:
+            msname = '03_06_T12'
+        else:
+            msname = '03_06_T01'
+
+    myprint(msname)
+    selfcal_mses[msname] = outms
 
 myprint(selfcal_mses)
-cont_vis = selfcal_mses['03_03']
+#cont_vis = selfcal_mses['03_03']
+# Do this single case because it was being ignored earlier
+# (uncomment this line to just do one field)
+#selfcal_mses = {'03_06_T12': selfcal_mses['03_06_T12']}
 
 for msname, cont_vis in selfcal_mses.items():
     # this is OK because there should be no corrected column

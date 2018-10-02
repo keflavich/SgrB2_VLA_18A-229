@@ -12,6 +12,9 @@ sys.path.append(os.getenv('SCRIPT_DIR'))
 from continuum_imaging_general import myclean, makefits
 from continuum_windows import Qmses
 
+from astropy.io import fits
+from astropy import wcs
+
 from taskinit import msmdtool, iatool, casalog, tbtool
 
 from tclean_cli import tclean_cli as tclean
@@ -32,8 +35,10 @@ msmd = msmdtool()
 tb = tbtool()
 
 
-from astropy.io import fits
-from astropy import wcs
+def myprint(x):
+    print(x)
+    casalog.post(str(x), origin='singlefield')
+
 
 mses = list(Qmses.keys())
 
@@ -44,6 +49,7 @@ fullpath_mses = ['../' + ms[:-3] + "_continuum_split_for_selfcal.ms"
 cont_vis = []
 for ms in fullpath_mses:
     splitagain = ms[:-3] + "_wtermmerge.ms"
+    myprint("{0} -> {1}".format(ms, splitagain))
     if not os.path.exists(splitagain):
         assert split(vis=ms, outputvis=splitagain,
                      datacolumn='corrected')
@@ -51,63 +57,66 @@ for ms in fullpath_mses:
 
 
 
-imagename = '18A-229_Q_mosaic_selfcal_wtermmerge_iter0_dirty'
-if not os.path.exists(imagename+".image.tt0.pbcor"):
-    # do a full-mosaic clean to enable mask creation
-    tclean(
-           vis=cont_vis,
-           spw='',
-           field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
-           phasecenter='J2000 17h47m19.693 -28d23m11.527',
-           imsize=[9000,9000],
-           cell='0.02arcsec',
-           imagename=imagename,
-           niter=0,
-           threshold='1000mJy',
-           robust=0.5,
-           gridder='wproject',
-           deconvolver='mtmfs',
-           specmode='mfs',
-           nterms=2,
-           weighting='briggs',
-           pblimit=0.2,
-           interactive=False,
-           outframe='LSRK',
-           savemodel='none',
-          )
-    makefits(imagename)
+# imagename = '18A-229_Q_mosaic_selfcal_wtermmerge_iter0_dirty'
+# if not os.path.exists(imagename+".image.tt0.pbcor"):
+#     # do a full-mosaic clean to enable mask creation
+#     tclean(
+#            vis=cont_vis,
+#            spw='',
+#            field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+#            phasecenter='J2000 17h47m19.693 -28d23m11.527',
+#            imsize=[9000,9000],
+#            cell='0.02arcsec',
+#            imagename=imagename,
+#            niter=0,
+#            threshold='1000mJy',
+#            robust=0.5,
+#            gridder='wproject',
+#            deconvolver='mtmfs',
+#            specmode='mfs',
+#            nterms=2,
+#            weighting='briggs',
+#            pblimit=0.2,
+#            interactive=False,
+#            outframe='LSRK',
+#            savemodel='none',
+#           )
+#     makefits(imagename)
+# 
+# 
+# # create a mask based on region selection (no thresholding here)
+# dirtyimagename = imagename+".image.tt0.pbcor"
+# exportfits(dirtyimagename, dirtyimagename+".fits", overwrite=True)
+# reg = pyregion.open('cleanbox_regions_SgrB2.reg')
+# imghdu = fits.open(dirtyimagename+".fits")[0]
+# #mask = reg.get_mask(imghdu)[None, None, :, :]
+# mask = reg.get_mask(header=wcs.WCS(imghdu.header).celestial.to_header(),
+#                     shape=imghdu.data.shape[2:])
+# imghdu.data = mask.astype('int16')
+# imghdu.header['BITPIX'] = 16
+# imghdu.writeto('cleanbox_mask_SgrB2.fits', clobber=True)
+# cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
+# importfits(fitsimage='cleanbox_mask_SgrB2.fits',
+#            imagename=cleanbox_mask_image,
+#            overwrite=True)
+# ia.open(cleanbox_mask_image)
+# ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
+#             name='cleanbox_mask')
+# 
+# ia.close()
+# cleanbox_mask = 'cleanbox_mask.mask'
+# makemask(mode='copy', inpimage=cleanbox_mask_image,
+#          inpmask=cleanbox_mask_image+":cleanbox_mask",
+#          output=cleanbox_mask,
+#          overwrite=True)
+# 
+# mask = cleanbox_mask_image
 
 
-# create a mask based on region selection (no thresholding here)
-dirtyimagename = imagename+".image.tt0.pbcor"
-exportfits(dirtyimagename, dirtyimagename+".fits", overwrite=True)
-reg = pyregion.open('cleanbox_regions_SgrB2.reg')
-imghdu = fits.open(dirtyimagename+".fits")[0]
-#mask = reg.get_mask(imghdu)[None, None, :, :]
-mask = reg.get_mask(header=wcs.WCS(imghdu.header).celestial.to_header(),
-                    shape=imghdu.data.shape[2:])
-imghdu.data = mask.astype('int16')
-imghdu.header['BITPIX'] = 16
-imghdu.writeto('cleanbox_mask_SgrB2.fits', clobber=True)
+
 cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
-importfits(fitsimage='cleanbox_mask_SgrB2.fits',
-           imagename=cleanbox_mask_image,
-           overwrite=True)
-ia.open(cleanbox_mask_image)
-ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
-            name='cleanbox_mask')
-
-ia.close()
 cleanbox_mask = 'cleanbox_mask.mask'
-makemask(mode='copy', inpimage=cleanbox_mask_image,
-         inpmask=cleanbox_mask_image+":cleanbox_mask",
-         output=cleanbox_mask,
-         overwrite=True)
-
 mask = cleanbox_mask_image
-
-
-
 
 
 
