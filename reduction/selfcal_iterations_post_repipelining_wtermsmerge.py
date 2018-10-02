@@ -145,7 +145,7 @@ myclean(vis=cont_vis,
         mask=mask,
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter1_wtermmerge.cal'
+caltable = '18A-229_Q_cal_iter1_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -160,7 +160,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic_wtermmerge.cal',
+        caltable='18A-229_Q_cal_iter1_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='120s',
@@ -224,7 +224,7 @@ myclean(vis=cont_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter2_60s_wtermmerge.cal'
+caltable = '18A-229_Q_cal_iter2_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -238,7 +238,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic_wtermmerge.cal',
+        caltable='18A-229_Q_cal_iter2_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='120s',
@@ -283,7 +283,7 @@ myclean(vis=cont_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter3_60s_wtermmerge.cal'
+caltable = '18A-229_Q_cal_iter3_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=cont_vis,
             caltable=caltable,
@@ -297,7 +297,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic_wtermmerge.cal',
+        caltable='18A-229_Q_cal_iter3_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='120s',
@@ -313,7 +313,7 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
              #spwmap=[0]*nspw,
              parang=True,)
 
-#selfcal_split_vis = 'continuum_concatenated_selfcal.ms'
+#selfcal_split_vis = 'continuum_selfcal.ms'
 #split(vis=cont_vis, outputvis=selfcal_split_vis,
 #      datacolumn='corrected',)
 selfcal_split_vis = cont_vis
@@ -340,7 +340,7 @@ myclean(vis=selfcal_split_vis,
        )
 
 
-caltable = '18A-229_Q_concatenated_cal_iter4_60s_wtermmerge.cal'
+caltable = '18A-229_Q_cal_iter4_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
@@ -354,7 +354,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic_wtermmerge.cal',
+        caltable='18A-229_Q_cal_iter4_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='120s',
@@ -387,7 +387,7 @@ myclean(vis=selfcal_split_vis,
         savemodel='modelcolumn',
        )
 
-caltable = '18A-229_Q_concatenated_cal_iter5_60s_wtermmerge.cal'
+caltable = '18A-229_Q_cal_iter5_60s_wtermmerge.cal'
 if not os.path.exists(caltable):
     gaincal(vis=selfcal_split_vis,
             caltable=caltable,
@@ -401,7 +401,7 @@ if not os.path.exists(caltable):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic_wtermmerge.cal',
+        caltable='18A-229_Q_cal_iter5_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='120s',
@@ -495,7 +495,7 @@ for spw in np.unique(summary['spectral windows']['names']):
 
 # do a purely diagnostic ampcal
 gaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic_wtermmerge.cal',
+        caltable='18A-229_Q_cal_iter6_ampcal_diagnostic_wtermmerge.cal',
         gaintype='G',
         combine='spw,scan,field',
         solint='120s',
