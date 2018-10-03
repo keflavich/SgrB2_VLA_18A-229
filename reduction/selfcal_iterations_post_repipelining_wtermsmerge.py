@@ -119,13 +119,14 @@ cleanbox_mask = 'cleanbox_mask.mask'
 mask = cleanbox_mask_image
 
 
-
+selfcal_fields = "Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(",")
+selfcal_fields = ['Sgr B2 NM Q']
 
 
 
 imagename = '18A-229_Q_singlefield_selfcal_iter1_wtermmerge'
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields=selfcal_fields,
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -135,15 +136,20 @@ myclean(vis=cont_vis,
                      },
         cell='0.01arcsec',
         name=imagename,
-        gridder='wproject',
+        gridder='awproject',
         wprojplanes=64,
+        rotatepastep=5.0,
+        cfcache='awtermmerge.cfcache',
         niter=10000,
         threshold='3mJy',
         scales=[0,3,9],
         robust=0.5,
         savemodel='modelcolumn',
         mask=mask,
+        parallel=True,
        )
+
+raise " make the rest match these parameters.... "
 
 caltable = '18A-229_Q_cal_iter1_wtermmerge.cal'
 if not os.path.exists(caltable):
@@ -203,7 +209,7 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt
              antenna='*&*', spwmap=[], parang=True,)
 
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields=selfcal_fields,
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -215,8 +221,11 @@ myclean(vis=cont_vis,
         name=imagename,
         scales=[0,3,9],
         niter=10000,
-        gridder='wproject',
+        gridder='awproject',
         wprojplanes=64,
+        psterm=True,
+        aterm=False,
+        cfcache='wtermmerge.cfcache',
         threshold='2mJy',
         robust=0.5,
         savemodel='modelcolumn',
@@ -262,7 +271,7 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
 
 
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields=selfcal_fields,
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -273,8 +282,11 @@ myclean(vis=cont_vis,
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
-        gridder='wproject',
+        gridder='awproject',
         wprojplanes=64,
+        psterm=True,
+        aterm=False,
+        cfcache='wtermmerge.cfcache',
         scales=[0,3,9],
         threshold='1mJy',
         robust=0.5,
@@ -330,8 +342,11 @@ myclean(vis=selfcal_split_vis,
         cell='0.01arcsec',
         name=imagename,
         niter=10000,
-        gridder='wproject',
+        gridder='awproject',
         wprojplanes=64,
+        psterm=True,
+        aterm=False,
+        cfcache='wtermmerge.cfcache',
         scales=[0,3,9],
         threshold='1mJy',
         robust=0.5,
@@ -379,8 +394,11 @@ myclean(vis=selfcal_split_vis,
         spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
         threshold='1mJy',
-        gridder='wproject',
+        gridder='awproject',
         wprojplanes=64,
+        psterm=True,
+        aterm=False,
+        cfcache='wtermmerge.cfcache',
         scales=[0,3,9],
         robust=0.5,
         mask=mask,
@@ -429,8 +447,11 @@ myclean(vis=selfcal_split_vis,
         robust=0.5,
         mask=mask,
         scales=[0,3,9],
-        gridder='wproject',
+        gridder='awproject',
         wprojplanes=64,
+        psterm=True,
+        aterm=False,
+        cfcache='wtermmerge.cfcache',
         savemodel='modelcolumn',
        )
 
@@ -446,7 +467,11 @@ tclean(
        niter=10000,
        threshold='1mJy',
        robust=0.5,
-       gridder='mosaic',
+       gridder='awproject',
+       wprojplanes=64,
+       psterm=True,
+       aterm=False,
+       cfcache='wtermmerge.cfcache',
        scales=[0,3,9],
        deconvolver='mtmfs',
        specmode='mfs',
