@@ -102,7 +102,7 @@ for gridder in ('standard', 'wproject', 'widefield', 'mosaic', 'awproject'):
             savemodel='none',
             mask=mask,
             noneg=False,
-            **extrapars[gridder],
+            **extrapars[gridder]
            )
 
 for gridder in ('standard', 'wproject', 'widefield', 'mosaic', 'awproject'):
@@ -122,5 +122,5 @@ for gridder in ('standard', 'wproject', 'widefield', 'mosaic', 'awproject'):
             savemodel='none',
             mask=mask,
             noneg=False,
-            **extrapars[gridder],
+            **extrapars[gridder]
            )

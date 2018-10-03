@@ -177,11 +177,11 @@ for msname, cont_vis in selfcal_mses.items():
             mask=mask,
            )
 
-    caltable = '18A-229_{msname}_Q_concatenated_cal_iter1.cal'.format(msname=msname)
+    caltable = '18A-229_{msname}_Q_cal_iter1.cal'.format(msname=msname)
     if not os.path.exists(caltable):
         gaincal(vis=cont_vis,
                 caltable=caltable,
-                field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+                field='Sgr B2 NM Q,Sgr B2 MS Q',
                 calmode='p',
                 refant='',
                 solint='60s',
@@ -192,7 +192,7 @@ for msname, cont_vis in selfcal_mses.items():
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,
-            caltable='18A-229_{msname}_Q_concatenated_cal_iter1_ampcal_diagnostic.cal'.format(msname=msname),
+            caltable='18A-229_{msname}_Q_cal_iter1_ampcal_diagnostic.cal'.format(msname=msname),
             gaintype='G',
             combine='spw,scan,field',
             solint='120s',
@@ -229,7 +229,7 @@ for msname, cont_vis in selfcal_mses.items():
     # mask = cleanbox_mask_image
 
     imagename = '18A-229_{msname}_Q_singlefield_selfcal_iter2'.format(msname=msname)
-    if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
+    if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
         applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
                  gaintable=[caltable], calwt=[False], applymode='calonly',
                  antenna='*&*', spwmap=[], parang=True,)
@@ -253,7 +253,7 @@ for msname, cont_vis in selfcal_mses.items():
             mask=mask,
            )
 
-    caltable = '18A-229_{msname}_Q_concatenated_cal_iter2.cal'.format(msname=msname)
+    caltable = '18A-229_{msname}_Q_cal_iter2.cal'.format(msname=msname)
     if not os.path.exists(caltable):
         gaincal(vis=cont_vis,
                 caltable=caltable,
@@ -268,7 +268,7 @@ for msname, cont_vis in selfcal_mses.items():
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,
-            caltable='18A-229_{msname}_Q_concatenated_cal_iter2_ampcal_diagnostic.cal'.format(msname=msname),
+            caltable='18A-229_{msname}_Q_cal_iter2_ampcal_diagnostic.cal'.format(msname=msname),
             gaintype='G',
             combine='spw,scan,field',
             solint='120s',
@@ -282,7 +282,7 @@ for msname, cont_vis in selfcal_mses.items():
     tb.close()
 
     imagename = '18A-229_{msname}_Q_singlefield_selfcal_iter3'.format(msname=msname)
-    if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
         applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
                  gaintable=[caltable], calwt=[False], applymode='calonly',
                  antenna='*&*',
@@ -330,7 +330,7 @@ for msname, cont_vis in selfcal_mses.items():
            )
 
 
-    caltable = '18A-229_{msname}_Q_concatenated_cal_iter3_60s.cal'.format(msname=msname)
+    caltable = '18A-229_{msname}_Q_cal_iter3_60s.cal'.format(msname=msname)
     if not os.path.exists(caltable):
         gaincal(vis=cont_vis,
                 caltable=caltable,
@@ -344,7 +344,7 @@ for msname, cont_vis in selfcal_mses.items():
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,
-            caltable='18A-229_{msname}_Q_concatenated_cal_iter3_ampcal_diagnostic.cal'.format(msname=msname),
+            caltable='18A-229_{msname}_Q_cal_iter3_ampcal_diagnostic.cal'.format(msname=msname),
             gaintype='G',
             combine='spw,scan,field',
             solint='120s',
@@ -353,7 +353,7 @@ for msname, cont_vis in selfcal_mses.items():
 
 
     imagename = '18A-229_{msname}_Q_singlefield_selfcal_iter4'.format(msname=msname)
-    if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
         applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
                  gaintable=[caltable], calwt=[False], applymode='calonly',
                  antenna='*&*',
@@ -381,7 +381,7 @@ for msname, cont_vis in selfcal_mses.items():
            )
 
 
-    caltable = '18A-229_{msname}_Q_concatenated_cal_iter4_60s.cal'.format(msname=msname)
+    caltable = '18A-229_{msname}_Q_cal_iter4_60s.cal'.format(msname=msname)
     if not os.path.exists(caltable):
         gaincal(vis=cont_vis,
                 caltable=caltable,
@@ -395,7 +395,7 @@ for msname, cont_vis in selfcal_mses.items():
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,
-            caltable='18A-229_{msname}_Q_concatenated_cal_iter4_ampcal_diagnostic.cal'.format(msname=msname),
+            caltable='18A-229_{msname}_Q_cal_iter4_ampcal_diagnostic.cal'.format(msname=msname),
             gaintype='G',
             combine='spw,scan,field',
             solint='120s',
@@ -404,7 +404,7 @@ for msname, cont_vis in selfcal_mses.items():
 
 
     imagename = '18A-229_{msname}_Q_singlefield_selfcal_iter5'.format(msname=msname)
-    if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
         # apply calibration from 4 self-cal'd fields to *all* fields
         gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
         for field in 'Sgr B2 NM Q,Sgr B2 MS Q'.split(","):
@@ -427,7 +427,7 @@ for msname, cont_vis in selfcal_mses.items():
             savemodel='modelcolumn',
            )
 
-    caltable = '18A-229_{msname}_Q_concatenated_cal_iter5_60s.cal'.format(msname=msname)
+    caltable = '18A-229_{msname}_Q_cal_iter5_60s.cal'.format(msname=msname)
     if not os.path.exists(caltable):
         gaincal(vis=cont_vis,
                 caltable=caltable,
@@ -441,7 +441,7 @@ for msname, cont_vis in selfcal_mses.items():
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,
-            caltable='18A-229_{msname}_Q_concatenated_cal_iter5_ampcal_diagnostic.cal'.format(msname=msname),
+            caltable='18A-229_{msname}_Q_cal_iter5_ampcal_diagnostic.cal'.format(msname=msname),
             gaintype='G',
             combine='spw,scan,field',
             solint='120s',
@@ -501,7 +501,7 @@ for msname, cont_vis in selfcal_mses.items():
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,
-            caltable='18A-229_{msname}_Q_concatenated_cal_iter6_ampcal_diagnostic.cal'.format(msname=msname),
+            caltable='18A-229_{msname}_Q_cal_iter6_ampcal_diagnostic.cal'.format(msname=msname),
             gaintype='G',
             combine='spw,scan,field',
             solint='120s',
