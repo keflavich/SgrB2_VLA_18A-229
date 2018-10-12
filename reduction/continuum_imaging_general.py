@@ -4,6 +4,7 @@ Not a standalone script; meant to be imported.
 """
 
 import datetime
+import shutil
 import os
 import glob
 
@@ -111,7 +112,7 @@ def myclean(
                           **kwargs
                          )
             makefits(imagename, cleanup=cleanup)
-        if noneg:
+        if noneg and os.path.exists(imagename+".model.tt0"):
             noneg_model(modelname=imagename+".model.tt0",
                         ms=vis,
                         imagename=imagename,
@@ -130,11 +131,17 @@ def noneg_model(modelname, ms, imagename, **kwargs):
     Given a model image, set all model components positive, then ft them into
     the ms's model column
     """
+    if os.path.exists(modelname+".positive"):
+        shutil.rmtree(modelname+".positive")
+
     immath(imagename=modelname,
            expr='iif(IM0<0, 0.0, IM0)',
            outfile=modelname+".positive",
           )
+
     if os.path.exists(modelname):
+        if os.path.exists(modelname+".old"):
+            shutil.rmtree(modelname+".old")
         os.rename(modelname, modelname+".old")
 
     tclean(vis=ms,

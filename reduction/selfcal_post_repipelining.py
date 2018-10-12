@@ -19,8 +19,14 @@ from applycal_cli import applycal_cli as applycal
 from importfits_cli import importfits_cli as importfits
 from imhead_cli import imhead_cli as imhead
 from split_cli import split_cli as split
+from taskinit import msmdtool, iatool, casalog, tbtool
 
 from astropy.io import fits
+
+def myprint(x):
+    print(x)
+    casalog.post(str(x), origin='selfcal_post_repipelining (split, DePree-selfcal)')
+
 
 mses = list(Qmses.keys())
 
@@ -67,6 +73,7 @@ for ms in mses:
     cont_ms = fullpathms[:-3]+"_continuum.ms"
 
     if not os.path.exists(cont_ms):
+        myprint("Flagging & splitting {0}".format(fullpathms))
         # ensure that both phase-calibrator and data are not flagged.
         flagdata(vis=fullpathms, mode='unflag',
                  field=('J1744-3116,Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,'
@@ -111,12 +118,15 @@ for ms in mses:
     model = '../reduction_scripts/DePree_NM_regridNM_jypix.image'
 
     if os.path.exists(model):
+        myprint("Model {0} exists, using it for selfcal of {1}"
+                .format(model, cont_ms))
         # if it doesn't exist, we need to run
         # continuum_imaging_make_selfcal_model
 
         caltable = '{0}_sgrb2_selfcal_phase_30ssolint.cal'.format(name)
 
         if not os.path.exists(caltable):
+            myprint("Caltable {0} does not exist, making it".format(caltable))
 
             ft(vis=cont_ms,
                field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
@@ -146,6 +156,7 @@ for ms in mses:
                     combine='scan',
                    )
 
+        myprint("Applying caltable {0}".format(caltable))
         applycal(flagbackup=False,
                  gainfield=[],
                  interp=[],
@@ -187,8 +198,11 @@ for ms in mses:
                     robust=0.5,
                     savemodel='none',
                     datacolumn='data',
+                    noneg=False, # don't need to worry about model...
                    )
 
+            myprint("Performing one round of imaging + self-calibration on {0}"
+                    .format(cont_ms))
             myclean(vis=cont_ms,
                     name="cutout_"+name,
                     fields=['Sgr B2 N Q', 'Sgr B2 NM Q', 'Sgr B2 MS Q'],

@@ -473,7 +473,7 @@ for msname, cont_vis in selfcal_mses.items():
             savemodel='none',
            )
 
-    imagename = '18A-229_{msname}_Q_mosaic_selfcal_iter6'.format(msname=msname)
+    imagename = '18A-229_{msname}_Q_mosaic_selfcal_iter6_hogbom'.format(msname=msname)
     tclean(
            vis=cont_vis,
            spw='',
@@ -487,7 +487,7 @@ for msname, cont_vis in selfcal_mses.items():
            robust=0.5,
            gridder='mosaic',
            scales=[0,3,9],
-           deconvolver='mtmfs',
+           deconvolver='hogbom',
            specmode='mfs',
            nterms=2,
            weighting='briggs',
@@ -498,6 +498,36 @@ for msname, cont_vis in selfcal_mses.items():
            mask=mask,
           )
     makefits(imagename)
+
+    try:
+        imagename = '18A-229_{msname}_Q_mosaic_selfcal_iter6'.format(msname=msname)
+        tclean(
+               vis=cont_vis,
+               spw='',
+               field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+               phasecenter='J2000 17h47m19.693 -28d23m11.527',
+               imsize=[9000,9000],
+               cell='0.02arcsec',
+               imagename=imagename,
+               niter=10000,
+               threshold='1mJy',
+               robust=0.5,
+               gridder='mosaic',
+               scales=[0,3,9],
+               deconvolver='mtmfs',
+               specmode='mfs',
+               nterms=2,
+               weighting='briggs',
+               pblimit=0.2,
+               interactive=False,
+               outframe='LSRK',
+               savemodel='none',
+               mask=mask,
+              )
+        makefits(imagename)
+    except IOError as ex:
+        myprint(str(ex))
+        myprint("mtmfs cleaning failed in iteration 6")
 
     # do a purely diagnostic ampcal
     gaincal(vis=cont_vis,

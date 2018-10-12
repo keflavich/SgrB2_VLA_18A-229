@@ -82,8 +82,8 @@ for ms in fullpath_mses:
 #            savemodel='none',
 #           )
 #     makefits(imagename)
-# 
-# 
+#
+#
 # # create a mask based on region selection (no thresholding here)
 # dirtyimagename = imagename+".image.tt0.pbcor"
 # exportfits(dirtyimagename, dirtyimagename+".fits", overwrite=True)
@@ -102,14 +102,14 @@ for ms in fullpath_mses:
 # ia.open(cleanbox_mask_image)
 # ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
 #             name='cleanbox_mask')
-# 
+#
 # ia.close()
 # cleanbox_mask = 'cleanbox_mask.mask'
 # makemask(mode='copy', inpimage=cleanbox_mask_image,
 #          inpmask=cleanbox_mask_image+":cleanbox_mask",
 #          output=cleanbox_mask,
 #          overwrite=True)
-# 
+#
 # mask = cleanbox_mask_image
 
 
@@ -192,14 +192,14 @@ gaincal(vis=cont_vis,
 # ia.open(cleanbox_mask_image)
 # ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
 #             name='cleanbox_mask')
-# 
+#
 # ia.close()
 # cleanbox_mask = 'cleanbox_mask.mask'
 # makemask(mode='copy', inpimage=cleanbox_mask_image,
 #          inpmask=cleanbox_mask_image+":cleanbox_mask",
 #          output=cleanbox_mask,
 #          overwrite=True)
-# 
+#
 # mask = cleanbox_mask_image
 
 imagename = '18A-229_Q_singlefield_selfcal_iter2_wtermmerge'
