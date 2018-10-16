@@ -82,45 +82,51 @@ extrapars = {'wproject': {'wprojplanes': 64,
 
 for gridder in ('standard', 'wproject', 'widefield', 'mosaic', 'awproject'):
 
-    imagename = '18A-229_Q_singlefield_imaging_smallfield_test_{0}'.format(gridder)
-    myclean(vis=cont_vis,
-            fields=selfcal_fields,
-            spws='',
-            imsize=1000,
-            phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
-                          "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
-                          "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
-                          "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
-                         },
-            cell='0.01arcsec',
-            name=imagename,
-            gridder=gridder,
-            niter=10000,
-            threshold='3mJy',
-            scales=[0,3,9],
-            robust=0.5,
-            savemodel='none',
-            mask=mask,
-            noneg=False,
-            **extrapars[gridder]
-           )
+    try:
+        imagename = '18A-229_Q_singlefield_imaging_smallfield_test_{0}'.format(gridder)
+        myclean(vis=cont_vis,
+                fields=selfcal_fields,
+                spws='',
+                imsize=1000,
+                phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
+                              "Sgr B2 NM Q":'J2000 17h47m20.166 -28d23m04.968',
+                              "Sgr B2 MS Q":'J2000 17h47m20.166 -28d23m04.968',
+                              "Sgr B2 S Q":'J2000 17h47m20.461 -28d23m45.059',
+                             },
+                cell='0.01arcsec',
+                name=imagename,
+                gridder=gridder,
+                niter=10000,
+                threshold='3mJy',
+                scales=[0,3,9],
+                robust=0.5,
+                savemodel='none',
+                mask=mask,
+                noneg=False,
+                **extrapars[gridder]
+               )
+    except Exception as ex:
+        myprint(ex)
 
 for gridder in ('standard', 'wproject', 'widefield', 'mosaic', 'awproject'):
 
     imagename = '18A-229_Q_singlefield_imaging_largefield_test_{0}'.format(gridder)
-    myclean(vis=cont_vis,
-            fields=selfcal_fields,
-            spws='',
-            imsize=4000,
-            cell='0.01arcsec',
-            name=imagename,
-            gridder=gridder,
-            niter=10000,
-            threshold='3mJy',
-            scales=[0,3,9],
-            robust=0.5,
-            savemodel='none',
-            mask=mask,
-            noneg=False,
-            **extrapars[gridder]
-           )
+    try:
+        myclean(vis=cont_vis,
+                fields=selfcal_fields,
+                spws='',
+                imsize=4000,
+                cell='0.01arcsec',
+                name=imagename,
+                gridder=gridder,
+                niter=10000,
+                threshold='3mJy',
+                scales=[0,3,9],
+                robust=0.5,
+                savemodel='none',
+                mask=mask,
+                noneg=False,
+                **extrapars[gridder]
+               )
+    except Exception as ex:
+        myprint(ex)

@@ -9,7 +9,7 @@ import numpy as np
 import sys
 assert os.getenv('SCRIPT_DIR') is not None
 sys.path.append(os.getenv('SCRIPT_DIR'))
-from continuum_imaging_general import myclean, makefits
+from continuum_imaging_general import myclean, makefits, mygaincal
 from continuum_windows import Qmses
 
 from taskinit import msmdtool, iatool, casalog, tbtool
@@ -40,18 +40,44 @@ mses = list(Qmses.keys())
 fullpath_mses = ['../' + ms[:-3] + "_continuum.ms"
                  for ms in mses if ms in Qmses]
 
-raw_and_corr_vis = 'continuum_concatenated_raw_and_corr.ms'
-if not os.path.exists(raw_and_corr_vis):
-    assert concat(vis=fullpath_mses, concatvis=raw_and_corr_vis,
-                  # should be used but isn't freqtol='5MHz',
-                 )
-cont_vis = 'continuum_concatenated_selfcal.ms'
-if not os.path.exists(cont_vis):
-    assert split(vis=raw_and_corr_vis, outputvis=cont_vis,
-                 datacolumn='corrected')
-
+# raw_and_corr_vis = 'continuum_concatenated_raw_and_corr.ms'
+# if not os.path.exists(raw_and_corr_vis):
+#     assert concat(vis=fullpath_mses, concatvis=raw_and_corr_vis,
+#                   # should be used but isn't freqtol='5MHz',
+#                  )
+# cont_vis = 'continuum_concatenated_selfcal.ms'
+# if not os.path.exists(cont_vis):
+#     assert split(vis=raw_and_corr_vis, outputvis=cont_vis,
+#                  datacolumn='corrected')
+# 
 # this is OK because there should be no corrected column
-clearcal(vis=cont_vis, addmodel=True)
+#clearcal(vis=cont_vis, addmodel=True)
+
+def myprint(x):
+    print(x)
+    casalog.post(str(x), origin='singlefield')
+
+
+selfcal_mses = {}
+for ms in fullpath_mses:
+    outms = ms[:-3]+"_split_for_selfcal.ms"
+    if not os.path.exists(outms):
+        # TODO: come back later & keep in DS...
+        split(vis=ms, outputvis=outms,
+              datacolumn='corrected',
+              field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q")
+    msname = ms[16:21]
+    if msname == '03_06':
+        if 'T12' in ms:
+            msname = '03_06_T12'
+        else:
+            msname = '03_06_T01'
+
+    myprint(msname)
+    selfcal_mses[msname] = outms
+
+myprint(selfcal_mses)
+cont_vis = list(selfcal_mses.values())
 
 
 imagename = '18A-229_Q_mosaic_selfcal_iter0_dirty'
@@ -60,7 +86,7 @@ if not os.path.exists(imagename+".image.tt0.pbcor"):
     tclean(
            vis=cont_vis,
            spw='',
-           field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+           field="Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
            phasecenter='J2000 17h47m19.693 -28d23m11.527',
            imsize=[9000,9000],
            cell='0.02arcsec',
@@ -120,7 +146,7 @@ mask = cleanbox_mask_image
 
 imagename = '18A-229_Q_singlefield_selfcal_iter1'
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -140,9 +166,9 @@ myclean(vis=cont_vis,
 
 caltable = '18A-229_Q_concatenated_cal_iter1.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
+    mygaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='60s',
@@ -152,7 +178,7 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-gaincal(vis=cont_vis,
+mygaincal(vis=cont_vis,
         caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic.cal',
         gaintype='G',
         combine='spw,scan,field',
@@ -191,12 +217,12 @@ gaincal(vis=cont_vis,
 
 imagename = '18A-229_Q_singlefield_selfcal_iter2'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
-    applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
+    myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*', spwmap=[], parang=True,)
 
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -216,9 +242,9 @@ myclean(vis=cont_vis,
 
 caltable = '18A-229_Q_concatenated_cal_iter2.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
+    mygaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='30s',
@@ -228,9 +254,9 @@ if not os.path.exists(caltable):
 
 caltable = '18A-229_Q_concatenated_cal_iter2_combinespw.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
+    mygaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='30s',
@@ -241,9 +267,9 @@ if not os.path.exists(caltable):
 
 caltable = '18A-229_Q_concatenated_cal_iter2_combinespw_30s.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
+    mygaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='30s',
@@ -254,9 +280,9 @@ if not os.path.exists(caltable):
 
 caltable = '18A-229_Q_concatenated_cal_iter2_30s.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
+    mygaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='30s',
@@ -265,7 +291,7 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-gaincal(vis=cont_vis,
+mygaincal(vis=cont_vis,
         caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic.cal',
         gaintype='G',
         combine='spw,scan,field',
@@ -275,13 +301,13 @@ gaincal(vis=cont_vis,
 
 
 
-tb.open(cont_vis+"/SPECTRAL_WINDOW")
+tb.open(cont_vis[0]+"/SPECTRAL_WINDOW")
 nspw = len(tb.getcol('NAME'))
 tb.close()
 
 imagename = '18A-229_Q_singlefield_selfcal_iter3'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
-    applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
+    myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*',
              #spwmap=[0]*nspw,
@@ -309,7 +335,7 @@ with open("outlierfile.txt","w") as fh:
     fh.write(outlierfile)
 
 myclean(vis=cont_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -330,9 +356,9 @@ myclean(vis=cont_vis,
 
 caltable = '18A-229_Q_concatenated_cal_iter3_20s.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=cont_vis,
+    mygaincal(vis=cont_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='20s',
@@ -341,7 +367,7 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-gaincal(vis=cont_vis,
+mygaincal(vis=cont_vis,
         caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic.cal',
         gaintype='G',
         combine='spw,scan,field',
@@ -352,7 +378,7 @@ gaincal(vis=cont_vis,
 
 imagename = '18A-229_Q_singlefield_selfcal_iter4'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
-    applycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
+    myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*',
              #spwmap=[0]*nspw,
@@ -364,7 +390,7 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
 selfcal_split_vis = cont_vis
 
 myclean(vis=selfcal_split_vis,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         spws='',
         imsize=1000,
         phasecenters={"Sgr B2 N Q":'J2000 17h47m19.897 -28d22m17.340',
@@ -385,9 +411,9 @@ myclean(vis=selfcal_split_vis,
 
 caltable = '18A-229_Q_concatenated_cal_iter4_20s.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=selfcal_split_vis,
+    mygaincal(vis=selfcal_split_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='20s',
@@ -396,7 +422,7 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-gaincal(vis=cont_vis,
+mygaincal(vis=cont_vis,
         caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic.cal',
         gaintype='G',
         combine='spw,scan,field',
@@ -408,16 +434,18 @@ gaincal(vis=cont_vis,
 imagename = '18A-229_Q_singlefield_selfcal_iter5'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
-    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
-    for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
+    gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
+    #for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
+    for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'.split(","):
         # apply the self-calibrations to the rest of the data
-        applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
+        myapplycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
                  gaintable=[caltable], calwt=[False], applymode='calonly',
                  antenna='*&*',
                  #spwmap=[0]*nspw,
                  parang=True,)
 
 myclean(vis=selfcal_split_vis,
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         name=imagename,
         spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
@@ -430,9 +458,9 @@ myclean(vis=selfcal_split_vis,
 
 caltable = '18A-229_Q_concatenated_cal_iter5_20s.cal'
 if not os.path.exists(caltable):
-    gaincal(vis=selfcal_split_vis,
+    mygaincal(vis=selfcal_split_vis,
             caltable=caltable,
-            field='Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q',
+            field='Sgr B2 NM Q,Sgr B2 MS Q',
             calmode='p',
             refant='',
             solint='20s',
@@ -441,7 +469,7 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-gaincal(vis=cont_vis,
+mygaincal(vis=cont_vis,
         caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic.cal',
         gaintype='G',
         combine='spw,scan,field',
@@ -452,10 +480,11 @@ gaincal(vis=cont_vis,
 
 imagename = '18A-229_Q_singlefield_selfcal_iter6'
 if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
-    gainfield = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q'
-    for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
+    gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
+    #for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
+    for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'.split(","):
         # apply the self-calibrations to the rest of the data
-        applycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
+        myapplycal(vis=selfcal_split_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
                  gaintable=[caltable], calwt=[False], applymode='calonly',
                  antenna='*&*',
                  #spwmap=[0]*nspw,
@@ -464,10 +493,10 @@ if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt
 
 # fullfield cleans: can't use mask w/ DS
 myclean(vis=selfcal_split_vis,
+        fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         name=imagename,
         spws='', # even for indiv, we're dealing with cont splitted data...
         niter=10000,
-        fields="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q".split(","),
         mask=mask,
         threshold='1mJy',
         robust=0.5,
@@ -479,7 +508,7 @@ imagename = '18A-229_Q_mosaic_selfcal_iter6'
 tclean(
        vis=selfcal_split_vis,
        spw='',
-       field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+       field="Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
        phasecenter='J2000 17h47m19.693 -28d23m11.527',
        imsize=[9000,9000],
        cell='0.02arcsec',
@@ -533,7 +562,7 @@ for spw in np.unique(summary['spectral windows']['names']):
     makefits(imagename, cleanup=False)
 
 # do a purely diagnostic ampcal
-gaincal(vis=cont_vis,
+mygaincal(vis=cont_vis,
         caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal',
         gaintype='G',
         combine='spw,scan,field',

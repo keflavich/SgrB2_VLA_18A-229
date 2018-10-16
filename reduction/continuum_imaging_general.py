@@ -12,6 +12,8 @@ from immath_cli import immath_cli as immath
 from tclean_cli import tclean_cli as tclean
 from impbcor_cli import impbcor_cli as impbcor
 from exportfits_cli import exportfits_cli as exportfits
+from gaincal_cli import gaincal_cli as gaincal
+from applycal_cli import applycal_cli as applycal
 
 def makefits(myimagebase, cleanup=True):
     if os.path.exists(myimagebase+'.image.tt0'):
@@ -157,3 +159,17 @@ def noneg_model(modelname, ms, imagename, **kwargs):
            savemodel='modelcolumn',
            **kwargs
           )
+
+def mygaincal(vis, **kwargs):
+    if isinstance(vis, list) or isinstance(vis, tuple):
+        for onems in vis:
+            gaincal(vis=onems, **kwargs)
+    else:
+        raise ValueError
+
+def myappycal(vis, **kwargs):
+    if isinstance(vis, list) or isinstance(vis, tuple):
+        for onems in vis:
+            applycal(vis=onems, **kwargs)
+    else:
+        raise ValueError

@@ -156,7 +156,7 @@ for ms in mses:
                     combine='scan',
                    )
 
-        myprint("Applying caltable {0}".format(caltable))
+        myprint("Applying caltable {0} to ms {1}".format(caltable, cont_ms))
         applycal(flagbackup=False,
                  gainfield=[],
                  interp=[],
