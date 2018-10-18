@@ -9,7 +9,7 @@ import numpy as np
 import sys
 assert os.getenv('SCRIPT_DIR') is not None
 sys.path.append(os.getenv('SCRIPT_DIR'))
-from continuum_imaging_general import myclean, makefits, mygaincal
+from continuum_imaging_general import myclean, makefits, mygaincal, myapplycal
 from continuum_windows import Qmses
 
 from taskinit import msmdtool, iatool, casalog, tbtool
@@ -108,31 +108,33 @@ if not os.path.exists(imagename+".image.tt0.pbcor"):
     makefits(imagename)
 
 
-# create a mask based on region selection (no thresholding here)
-dirtyimagename = imagename+".image.tt0.pbcor"
-exportfits(dirtyimagename, dirtyimagename+".fits", overwrite=True)
-reg = pyregion.open('cleanbox_regions_SgrB2.reg')
-imghdu = fits.open(dirtyimagename+".fits")[0]
-#mask = reg.get_mask(imghdu)[None, None, :, :]
-mask = reg.get_mask(header=wcs.WCS(imghdu.header).celestial.to_header(),
-                    shape=imghdu.data.shape[2:])
-imghdu.data = mask.astype('int16')
-imghdu.header['BITPIX'] = 16
-imghdu.writeto('cleanbox_mask_SgrB2.fits', clobber=True)
-cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
-importfits(fitsimage='cleanbox_mask_SgrB2.fits',
-           imagename=cleanbox_mask_image,
-           overwrite=True)
-ia.open(cleanbox_mask_image)
-ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
-            name='cleanbox_mask')
-
-ia.close()
 cleanbox_mask = 'cleanbox_mask.mask'
-makemask(mode='copy', inpimage=cleanbox_mask_image,
-         inpmask=cleanbox_mask_image+":cleanbox_mask",
-         output=cleanbox_mask,
-         overwrite=True)
+cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
+if not os.path.exists(cleanbox_mask) or not os.path.exists(cleanbox_mask_image):
+    # create a mask based on region selection (no thresholding here)
+    dirtyimagename = imagename+".image.tt0.pbcor"
+    exportfits(dirtyimagename, dirtyimagename+".fits", overwrite=True)
+    reg = pyregion.open('cleanbox_regions_SgrB2.reg')
+    imghdu = fits.open(dirtyimagename+".fits")[0]
+    #mask = reg.get_mask(imghdu)[None, None, :, :]
+    mask = reg.get_mask(header=wcs.WCS(imghdu.header).celestial.to_header(),
+                        shape=imghdu.data.shape[2:])
+    imghdu.data = mask.astype('int16')
+    imghdu.header['BITPIX'] = 16
+    imghdu.writeto('cleanbox_mask_SgrB2.fits', clobber=True)
+    cleanbox_mask_image = 'cleanbox_mask_SgrB2.image'
+    importfits(fitsimage='cleanbox_mask_SgrB2.fits',
+               imagename=cleanbox_mask_image,
+               overwrite=True)
+    ia.open(cleanbox_mask_image)
+    ia.calcmask(mask=cleanbox_mask_image+" > 0.5",
+                name='cleanbox_mask')
+
+    ia.close()
+    makemask(mode='copy', inpimage=cleanbox_mask_image,
+             inpmask=cleanbox_mask_image+":cleanbox_mask",
+             output=cleanbox_mask,
+             overwrite=True)
 
 mask = cleanbox_mask_image
 
@@ -167,24 +169,26 @@ myclean(vis=cont_vis,
 caltable = '18A-229_Q_concatenated_cal_iter1.cal'
 if not os.path.exists(caltable):
     mygaincal(vis=cont_vis,
-            caltable=caltable,
-            field='Sgr B2 NM Q,Sgr B2 MS Q',
-            calmode='p',
-            refant='',
-            solint='60s',
-            minsnr=5,
-            #uvrange='0~2000klambda',
-            #minblperant=3,
-           )
+              caltable=caltable,
+              field='Sgr B2 NM Q,Sgr B2 MS Q',
+              calmode='p',
+              refant='',
+              solint='60s',
+              minsnr=5,
+              #uvrange='0~2000klambda',
+              #minblperant=3,
+             )
 
 # do a purely diagnostic ampcal
-mygaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic.cal',
-        gaintype='G',
-        combine='spw,scan,field',
-        solint='inf',
-        calmode='a',
-        solnorm=True)
+diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter1_ampcal_diagnostic.cal'
+if not os.path.exists(diagnostic_ampcal_table):
+    mygaincal(vis=cont_vis,
+              caltable=diagnostic_ampcal_table,
+              gaintype='G',
+              combine='spw,scan,field',
+              solint='inf',
+              calmode='a',
+              solnorm=True)
 
 
 #moved to an earlier step
@@ -216,7 +220,7 @@ mygaincal(vis=cont_vis,
 # mask = cleanbox_mask_image
 
 imagename = '18A-229_Q_singlefield_selfcal_iter2'
-if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
+if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
     myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*', spwmap=[], parang=True,)
@@ -291,13 +295,15 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-mygaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic.cal',
-        gaintype='G',
-        combine='spw,scan,field',
-        solint='inf',
-        calmode='a',
-        solnorm=True)
+diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter2_ampcal_diagnostic.cal'
+if not os.path.exists(diagnostic_ampcal_table):
+    mygaincal(vis=cont_vis,
+              caltable=diagnostic_ampcal_table,
+              gaintype='G',
+              combine='spw,scan,field',
+              solint='inf',
+              calmode='a',
+              solnorm=True)
 
 
 
@@ -306,33 +312,12 @@ nspw = len(tb.getcol('NAME'))
 tb.close()
 
 imagename = '18A-229_Q_singlefield_selfcal_iter3'
-if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*',
              #spwmap=[0]*nspw,
              parang=True,)
-
-
-outlierfile = """# Outlier File
-imagename={imname}_M
-phasecenter=J2000 17h47m20.167 -28d23m04.337
-imsize=[1000,1000]
-
-
-imagename={imname}_N
-phasecenter=J2000 17h47m19.837 -28d22m18.867
-imsize=[1000,1000]
-
-imagename={imname}_Z
-phasecenter=J2000 17h47m20.040 -28d22m41.397
-imsize=[500,500]
-
-imagename={imname}_S
-phasecenter=J2000 17h47m20.455 -28d23m45.067
-imsize=[1000,1000]""".format(imname=imagename)
-with open("outlierfile.txt","w") as fh:
-    fh.write(outlierfile)
 
 myclean(vis=cont_vis,
         fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
@@ -367,17 +352,20 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-mygaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic.cal',
-        gaintype='G',
-        combine='spw,scan,field',
-        solint='inf',
-        calmode='a',
-        solnorm=True)
+diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter3_ampcal_diagnostic.cal'
+if not os.path.exists(diagnostic_ampcal_table):
+    mygaincal(vis=cont_vis,
+              caltable=diagnostic_ampcal_table,
+              gaintype='G',
+              combine='spw,scan,field',
+              solint='inf',
+              calmode='a',
+              solnorm=True)
+
 
 
 imagename = '18A-229_Q_singlefield_selfcal_iter4'
-if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*',
@@ -422,17 +410,21 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-mygaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic.cal',
-        gaintype='G',
-        combine='spw,scan,field',
-        solint='inf',
-        calmode='a',
-        solnorm=True)
+diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter4_ampcal_diagnostic.cal'
+if not os.path.exists(diagnostic_ampcal_table):
+    mygaincal(vis=cont_vis,
+              caltable=diagnostic_ampcal_table,
+              gaintype='G',
+              combine='spw,scan,field',
+              solint='inf',
+              calmode='a',
+              solnorm=True)
+
+
 
 
 imagename = '18A-229_Q_singlefield_selfcal_iter5'
-if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     # apply calibration from 4 self-cal'd fields to *all* fields
     gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
     #for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
@@ -469,17 +461,19 @@ if not os.path.exists(caltable):
            )
 
 # do a purely diagnostic ampcal
-mygaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic.cal',
-        gaintype='G',
-        combine='spw,scan,field',
-        solint='inf',
-        calmode='a',
-        solnorm=True)
+diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter5_ampcal_diagnostic.cal'
+if not os.path.exists(diagnostic_ampcal_table):
+    mygaincal(vis=cont_vis,
+              caltable=diagnostic_ampcal_table,
+              gaintype='G',
+              combine='spw,scan,field',
+              solint='inf',
+              calmode='a',
+              solnorm=True)
 
 
 imagename = '18A-229_Q_singlefield_selfcal_iter6'
-if not os.path.exists(imagename+'_Sgr_B2_N_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
     gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
     #for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'.split(","):
     for field in 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q'.split(","):
@@ -562,10 +556,13 @@ for spw in np.unique(summary['spectral windows']['names']):
     makefits(imagename, cleanup=False)
 
 # do a purely diagnostic ampcal
-mygaincal(vis=cont_vis,
-        caltable='18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal',
-        gaintype='G',
-        combine='spw,scan,field',
-        solint='inf',
-        calmode='a',
-        solnorm=True)
+diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal'
+if not os.path.exists(diagnostic_ampcal_table):
+    mygaincal(vis=cont_vis,
+              caltable=diagnostic_ampcal_table,
+              gaintype='G',
+              combine='spw,scan,field',
+              solint='inf',
+              calmode='a',
+              solnorm=True)
+

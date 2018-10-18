@@ -7,6 +7,7 @@ import datetime
 import shutil
 import os
 import glob
+import re
 
 from immath_cli import immath_cli as immath
 from tclean_cli import tclean_cli as tclean
@@ -14,6 +15,9 @@ from impbcor_cli import impbcor_cli as impbcor
 from exportfits_cli import exportfits_cli as exportfits
 from gaincal_cli import gaincal_cli as gaincal
 from applycal_cli import applycal_cli as applycal
+from taskinit import casalog
+
+
 
 def makefits(myimagebase, cleanup=True):
     if os.path.exists(myimagebase+'.image.tt0'):
@@ -114,6 +118,9 @@ def myclean(
                           **kwargs
                          )
             makefits(imagename, cleanup=cleanup)
+        else:
+            casalog.post("Skipping {0}".format(imagename), origin='myclean')
+
         if noneg and os.path.exists(imagename+".model.tt0"):
             noneg_model(modelname=imagename+".model.tt0",
                         ms=vis,
@@ -160,16 +167,32 @@ def noneg_model(modelname, ms, imagename, **kwargs):
            **kwargs
           )
 
-def mygaincal(vis, **kwargs):
+name_regex = re.compile('18A-229_2018_([0-9][0-9])_([0-9][0-9])_T([0-9][0-9])_[0-9][0-9]_[0-9][0-9].[0-9][0-9][0-9]')
+
+def mygaincal(vis, name_regex=name_regex, caltable=None, **kwargs):
     if isinstance(vis, list) or isinstance(vis, tuple):
         for onems in vis:
-            gaincal(vis=onems, **kwargs)
+            matches = name_regex.search(onems)
+            assert matches.groups() is not None
+            mon,day,hr = matches.groups()
+            caltable_ = "{0}_{1}_T{2}_{3}".format(mon,day,hr,caltable)
+            if not os.path.exists(caltable_):
+                gaincal(vis=onems, caltable=caltable_, **kwargs)
     else:
         raise ValueError
 
-def myappycal(vis, **kwargs):
+def myapplycal(vis, name_regex=name_regex, gaintable=None, **kwargs):
+    assert len(gaintable) == 1
     if isinstance(vis, list) or isinstance(vis, tuple):
         for onems in vis:
-            applycal(vis=onems, **kwargs)
+            matches = name_regex.search(onems)
+            assert matches.groups() is not None
+            mon,day,hr = matches.groups()
+            caltable = gaintable[0]
+            caltable_ = "{0}_{1}_T{2}_{3}".format(mon,day,hr,caltable)
+            if os.path.exists(caltable):
+                applycal(vis=onems, gaintable=[caltable_], **kwargs)
+            else:
+                raise IOError("No such table {0}".format(caltable_))
     else:
         raise ValueError
