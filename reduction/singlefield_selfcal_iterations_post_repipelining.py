@@ -1,5 +1,4 @@
 """
-Self-calibrate the Q-band data on maps made from the 'good' dates.
 """
 import os
 #import runpy
@@ -47,7 +46,7 @@ def myprint(x):
 
 selfcal_mses = {}
 for ms in fullpath_mses:
-    outms = ms[:-3]+"_split_for_selfcal.ms"
+    outms = ms[:-3]+"_split_for_selfcal_eachdate.ms"
     if not os.path.exists(outms):
         split(vis=ms, outputvis=outms,
               datacolumn='corrected', field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q")

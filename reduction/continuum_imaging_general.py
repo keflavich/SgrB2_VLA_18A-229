@@ -179,6 +179,8 @@ def mygaincal(vis, name_regex=name_regex, caltable=None, **kwargs):
             if not os.path.exists(caltable_):
                 gaincal(vis=onems, caltable=caltable_, **kwargs)
     else:
+        casalog.post("FAILURE: bad vis input {0}".format(vis),
+                     origin='mygaincal', priority='SEVERE')
         raise ValueError
 
 def myapplycal(vis, name_regex=name_regex, gaintable=None, **kwargs):
@@ -190,9 +192,13 @@ def myapplycal(vis, name_regex=name_regex, gaintable=None, **kwargs):
             mon,day,hr = matches.groups()
             caltable = gaintable[0]
             caltable_ = "{0}_{1}_T{2}_{3}".format(mon,day,hr,caltable)
-            if os.path.exists(caltable):
+            if os.path.exists(caltable_):
                 applycal(vis=onems, gaintable=[caltable_], **kwargs)
             else:
+                casalog.post("FAILURE: table {0} not found".format(caltable_),
+                             origin='myapplycal', priority='SEVERE')
                 raise IOError("No such table {0}".format(caltable_))
     else:
+        casalog.post("FAILURE: bad vis input {0}".format(vis),
+                     origin='myapplycal', priority='SEVERE')
         raise ValueError

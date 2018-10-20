@@ -79,6 +79,7 @@ for ms in mses:
                  field=('J1744-3116,Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,'
                         'Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'))
         flagdata(vis=fullpathms, mode='manual', autocorr=True)
+        flagdata(vis=fullpathms, mode='quack', quackinterval=10)
 
         # flag edge channels
         flagchans = ",".join(["{0}:0~5;123~128".format(xx) for xx in

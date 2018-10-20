@@ -1,5 +1,4 @@
 """
-Self-calibrate the Q-band data on maps made from the 'good' dates.
 """
 import os
 #import runpy
@@ -60,7 +59,7 @@ def myprint(x):
 
 selfcal_mses = {}
 for ms in fullpath_mses:
-    outms = ms[:-3]+"_split_for_selfcal.ms"
+    outms = ms[:-3]+"_split_for_selfcal_mergedates.ms"
     if not os.path.exists(outms):
         # TODO: come back later & keep in DS...
         split(vis=ms, outputvis=outms,
@@ -145,6 +144,7 @@ mask = cleanbox_mask_image
 
 
 
+myprint("Beginning iteration 1")
 
 imagename = '18A-229_Q_singlefield_selfcal_iter1'
 myclean(vis=cont_vis,
@@ -219,11 +219,14 @@ if not os.path.exists(diagnostic_ampcal_table):
 # 
 # mask = cleanbox_mask_image
 
+
 imagename = '18A-229_Q_singlefield_selfcal_iter2'
 if not os.path.exists(imagename+'_Sgr_B2_NM_Q_r0.5_allcont_clean1e4_2mJy.image.tt0.pbcor.fits'):
     myapplycal(vis=cont_vis, flagbackup=False, gainfield=[], interp=['linearperobs'],
              gaintable=[caltable], calwt=[False], applymode='calonly',
              antenna='*&*', spwmap=[], parang=True,)
+
+myprint("Beginning iteration 2")
 
 myclean(vis=cont_vis,
         fields="Sgr B2 NM Q,Sgr B2 MS Q".split(","),
