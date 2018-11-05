@@ -133,6 +133,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
+    # this whole data set appears to just be awful
     vis='../18A-229_2018_03_08_T12_39_54.188/18A-229.sb35065347.eb35212154.58185.43138087963_continuum{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
@@ -167,6 +168,7 @@ for suffix in ("_split_for_selfcal", "", ):
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     flagdata(vis=vis, mode='manual', antenna='ea19')
+    flagdata(vis=vis, mode='manual', antenna='ea07,ea17,ea22', spw='36~49') #  EVLA_Q#B2D2
     flagfile = get_flagonline_base(vis)
     if os.path.exists(flagfile):
         flagdata(vis=vis, inpfile=flagfile, mode='list')
