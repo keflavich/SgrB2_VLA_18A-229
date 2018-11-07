@@ -1,0 +1,17 @@
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_02_T23_06_49.534/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_02_T23_06_49.534/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_03_T15_27_35.951/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_03_T15_27_35.951/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_05_T15_05_28.584/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_05_T15_05_28.584/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_05_T15_05_30.260/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_05_T15_05_30.260/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_06_T01_29_24.948/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_06_T01_29_24.948/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_06_T12_39_58.178/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_06_T12_39_58.178/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_07_T13_19_55.375/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_07_T13_19_55.375/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_08_T12_39_54.188/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_08_T12_39_54.188/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_10_T12_59_53.135/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_10_T12_59_53.135/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_23_T15_19_54.203/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_23_T15_19_54.203/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_25_T12_19_54.375/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_25_T12_19_54.375/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_28_T17_09_22.432/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_28_T17_09_22.432/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_29_T13_19_55.276/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_29_T13_19_55.276/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_03_29_T15_19_51.154/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_03_29_T15_19_51.154/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_04_05_T10_59_52.640/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_04_05_T10_59_52.640/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_04_06_T14_19_50.811/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_04_06_T14_19_50.811/
+rsync -Cavpu --partial --progress --rsh=ssh -e 'ssh -p 2032' ~/work/sgrb2/vla/18A-229/reduction/18A-229_2018_04_18_T13_19_53.878/ aginsbur@localhost:/lustre/aginsbur/sgrb2/18A-229_2018_04_18_T13_19_53.878/
