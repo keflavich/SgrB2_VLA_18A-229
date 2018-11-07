@@ -15,4 +15,5 @@ WORK_DIR='/lustre/aginsbur/sgrb2/18A-229/LONGDATE'
 cd ${WORK_DIR}
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
-xvfb-run -d casa-pipe --nogui --nologger -c "execfile('$WORK_DIR/casa_pipescript.py')"
+#xvfb-run -d casa-pipe --nogui --nologger -c "execfile('$WORK_DIR/casa_pipescript.py')"
+mpicasa -machinefile $PBS_NODEFILE casa-pipe --nogui --nologger -c "execfile('$WORK_DIR/casa_pipescript.py')"

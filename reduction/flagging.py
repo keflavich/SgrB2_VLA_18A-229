@@ -10,10 +10,10 @@ def get_flagonline_base(fn):
 
     return os.path.join('..', 'reduction_scripts', basedir, msbase+".flagonline.txt")
 
-for suffix in ("_split_for_selfcal", "", ):
+for suffix in ("_continuum_split_for_selfcal", "_continuum", ""):
 
 
-    vis='../18A-229_2018_04_05_T10_59_52.640/18A-229.sb35258391.eb35265194.58213.344589120374_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_04_05_T10_59_52.640/18A-229.sb35258391.eb35265194.58213.344589120374{0}.ms'.format(suffix)
 
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
@@ -35,7 +35,7 @@ for suffix in ("_split_for_selfcal", "", ):
     casalog.post("Flag fraction = {0}".format(summary['flagged'] / summary['total']))
     assert summary['flagged'] / summary['total'] < 0.7
 
-    vis='../18A-229_2018_03_10_T12_59_53.135/18A-229.sb35065347.eb35215346.58187.443269247684_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_10_T12_59_53.135/18A-229.sb35065347.eb35215346.58187.443269247684{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     # conservative: flagdata(vis=vis, mode='manual', antenna='ea24&ea25', spw='4,5,6,7,13', correlation='LL')
@@ -53,7 +53,7 @@ for suffix in ("_split_for_selfcal", "", ):
     casalog.post("Flag fraction = {0}".format(summary['flagged'] / summary['total']))
     assert summary['flagged'] / summary['total'] < 0.7
 
-    vis='../18A-229_2018_03_03_T15_27_35.951/18A-229.sb35058339.eb35189568.58180.4553891088_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_03_T15_27_35.951/18A-229.sb35058339.eb35189568.58180.4553891088{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     # ea19 subreflector, as usual
@@ -70,7 +70,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
-    vis='../18A-229_2018_03_05_T15_05_28.584/18A-229.sb35065347.eb35195562.58182.447515127315_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_05_T15_05_28.584/18A-229.sb35065347.eb35195562.58182.447515127315{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     # ea19 flubbed several test gains, as did 03.  but 01 and 18 were fine?
@@ -88,7 +88,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
-    vis='../18A-229_2018_03_06_T01_29_24.948/18A-229.sb35058339.eb35201848.58183.55541637732_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_06_T01_29_24.948/18A-229.sb35058339.eb35201848.58183.55541637732{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     flagdata(vis=vis, mode='manual', antenna='ea19')
@@ -102,7 +102,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
-    vis='../18A-229_2018_03_06_T12_39_58.178/18A-229.sb35065347.eb35201827.58183.43683233796_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_06_T12_39_58.178/18A-229.sb35065347.eb35201827.58183.43683233796{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     # ea19 subreflector
@@ -119,7 +119,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
-    vis='../18A-229_2018_03_07_T13_19_55.375/18A-229.sb35058339.eb35204985.58184.437571539354_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_07_T13_19_55.375/18A-229.sb35058339.eb35204985.58184.437571539354{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     flagdata(vis=vis, mode='manual', antenna='ea19')
@@ -134,7 +134,7 @@ for suffix in ("_split_for_selfcal", "", ):
 
 
     # this whole data set appears to just be awful
-    vis='../18A-229_2018_03_08_T12_39_54.188/18A-229.sb35065347.eb35212154.58185.43138087963_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_08_T12_39_54.188/18A-229.sb35065347.eb35212154.58185.43138087963{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     flagdata(vis=vis, mode='manual', antenna='ea19')
@@ -150,7 +150,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
-    vis='../18A-229_2018_04_06_T14_19_50.811/18A-229.sb35258391.eb35276197.58214.498005057874_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_04_06_T14_19_50.811/18A-229.sb35258391.eb35276197.58214.498005057874{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     flagdata(vis=vis, mode='manual', antenna='ea19')
@@ -164,7 +164,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
 
-    vis='../18A-229_2018_04_18_T13_19_53.878/18A-229.sb35258391.eb35349729.58226.46470898148_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_04_18_T13_19_53.878/18A-229.sb35258391.eb35349729.58226.46470898148{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     flagdata(vis=vis, mode='manual', antenna='ea19')
@@ -179,7 +179,7 @@ for suffix in ("_split_for_selfcal", "", ):
     assert summary['flagged'] / summary['total'] < 0.7
 
     # was there a reason I just excluded this one?
-    vis='../18A-229_2018_03_02_T23_06_49.534/18A-229.sb35058339.eb35183211.58179.45517583333_continuum{0}.ms'.format(suffix)
+    vis='../18A-229_2018_03_02_T23_06_49.534/18A-229.sb35058339.eb35183211.58179.45517583333{0}.ms'.format(suffix)
     flagdata(vis=vis, mode='unflag')
     flagdata(vis=vis, mode='quack', quackmode='beg', quackinterval=10.0)
     # these get no solns, maybe don't detect src?
