@@ -1,4 +1,6 @@
 import numpy as np
+from taskinit import tbtool
+tb = tbtool()
 
 def check_intents(vis,
                   bad_intent='CALIBRATE_BANDPASS#UNSPECIFIED,CALIBRATE_FLUX#UNSPECIFIED',
@@ -13,10 +15,16 @@ def check_intents(vis,
 
     tb.close()
 
-    match = obs_mode == bad_intent
+    match = np.array([('CALIBRATE_BANDPASS' in om) and ('CALIBRATE_FLUX' in om) for om in obs_mode],
+                     dtype=bool)
+
     if not match.any():
-        print("No matches to intent {0} found.".format(bad_intent))
+        print("{1}: No matches to intent {0} found (this means no corrections are needed).".format(bad_intent, vis))
         #raise ValueError("No matches to intent {0} found.".format(bad_intent))
+    calfluxonly = ['CALIBRATE_FLUX' in om for om in obs_mode]
+    assert any(calfluxonly)
+    calbponly = ['CALIBRATE_BANDPASS' in om for om in obs_mode]
+    assert any(calbponly)
 
     bad_state_id_nums = np.where(match)
 

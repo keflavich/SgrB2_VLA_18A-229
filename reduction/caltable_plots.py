@@ -45,6 +45,54 @@ for jd in np.unique(tbl['JD']):
     pl.legend(loc='best')
     pl.savefig('calplots/{0}_{1}.png'.format(jd, band))
 
+fluxes = {}
+
+sources = np.unique(tbl['FieldID'])
+for bpname,frqrange in (('B1D1', (42,43.8)),
+                        ('B2D2', (43.8, 45.8)),
+                        ('A1C1', (46,47.75)),
+                        ('A2C2', (47.75, 50))):
+    frqmask = (tbl['freq']/1e3 > frqrange[0]) & (tbl['freq']/1e3 < frqrange[1])
+
+
+    for jd in np.unique(tbl['JD']):
+
+        datemask = tbl['JD'] == jd
+
+        for source in sources:
+            sourcemask = tbl['FieldID'] == source
+            contmask = tbl['bw'] == 128e3
+            mask = sourcemask & contmask & frqmask & datemask
+
+
+            subtbl = tbl[mask]
+            if any(mask):
+                flux = np.mean(subtbl['peak'])
+                rms = np.std(subtbl['peak'])
+
+                fluxes[(source, jd, bpname)] = (flux,rms)
+
+
+    for source in sources:
+        fig = pl.figure(1)
+        fig.clf()
+        ax = fig.gca()
+        for bb in ('A1C1','A2C2','B1D1','B2D2'):
+            ax.errorbar([k[1] for k in fluxes
+                         if k[0] == source and k[2] == bb],
+                        [v[0] for k,v in fluxes.items()
+                         if k[0] == source and k[2] == bb],
+                        yerr=[v[1] for k,v in fluxes.items()
+                              if k[0] == source and k[2] == bb],
+                        linestyle='none',
+                        marker='o',
+                        label=bb)
+
+        pl.xlim(58177, 58229)
+        pl.legend(loc='best')
+        pl.savefig('calplots/{0}_vs_time.png'.format(source))
+
+
 
 # make a grid showing which SB was observed when
 qmask = tbl['BandName'] == 'Q'

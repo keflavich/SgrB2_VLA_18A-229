@@ -29,7 +29,7 @@ try:
     hifv_targetflag(intents='*CALIBRATE*')#,*TARGET*')
     #hifv_statwt(pipelinemode="automatic")
     hifv_plotsummary(pipelinemode="automatic")
-    hif_makeimlist(intent='PHASE,BANDPASS,TARGET')
+    hif_makeimlist(intent='PHASE,BANDPASS')
     hif_makeimages(hm_masking='none')
 finally:
     h_save()
