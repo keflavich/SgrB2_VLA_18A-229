@@ -23,5 +23,6 @@ echo "PBS_NODEFILE = ",$PBS_NODEFILE
 cat $PBS_NODEFILE
 
 casa --nogui --nologger --log2term -c "${SCRIPT_DIR}/singlefield_imaging_tests.py"
+casa --nogui --nologger --log2term -c "${SCRIPT_DIR}/deeper_singlefield_clean.py"
 
 # mpicasa -machinefile $PBS_NODEFILE casa --nogui --nologger --log2term -c "${SCRIPT_DIR}/singlefield_imaging_tests.py"
