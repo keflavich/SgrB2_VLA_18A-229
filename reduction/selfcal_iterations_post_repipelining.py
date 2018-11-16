@@ -20,9 +20,9 @@ from gaincal_cli import gaincal_cli as gaincal
 from applycal_cli import applycal_cli as applycal
 from concat_cli import concat_cli as concat
 from importfits_cli import importfits_cli as importfits
+from exportfits_cli import exportfits_cli as exportfits
 from imhead_cli import imhead_cli as imhead
 from makemask_cli import makemask_cli as makemask
-from exportfits_cli import exportfits_cli as exportfits
 from importfits_cli import importfits_cli as importfits
 from clearcal_cli import clearcal_cli as clearcal
 from split_cli import split_cli as split

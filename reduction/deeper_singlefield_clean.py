@@ -1,5 +1,7 @@
 """
 Imaging test: can I clean outside the mask?
+
+answer: firm no.
 """
 import os
 #import runpy
