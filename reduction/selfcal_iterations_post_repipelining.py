@@ -502,61 +502,64 @@ myclean(vis=selfcal_split_vis,
        )
 
 imagename = '18A-229_Q_mosaic_selfcal_iter6'
-tclean(
-       vis=selfcal_split_vis,
-       spw='',
-       field="Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
-       phasecenter='J2000 17h47m19.693 -28d23m11.527',
-       imsize=[9000,9000],
-       cell='0.02arcsec',
-       imagename=imagename,
-       niter=10000,
-       threshold='1mJy',
-       robust=0.5,
-       gridder='mosaic',
-       scales=[0,3,9],
-       deconvolver='mtmfs',
-       specmode='mfs',
-       nterms=2,
-       weighting='briggs',
-       pblimit=0.2,
-       interactive=False,
-       outframe='LSRK',
-       savemodel='none',
-       mask=mask,
-      )
-makefits(imagename)
-
-# make some smaller diagnostic images
-msmd.open(selfcal_split_vis)
-summary = msmd.summary()
-msmd.close()
-for spw in np.unique(summary['spectral windows']['names']):
-    imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_spw{0}'.format(spw)
-    tclean(vis=cont_vis,
+if not os.path.exists(imagename+".image.tt0.pbcor.fits"):
+    tclean(
+           vis=selfcal_split_vis,
+           spw='',
+           field="Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q",
+           phasecenter='J2000 17h47m19.693 -28d23m11.527',
+           imsize=[9000,9000],
+           cell='0.02arcsec',
            imagename=imagename,
-           field="Sgr B2 NM Q,Sgr B2 MS Q",
-           spw=spw,
-           imsize=[500,500],
-           phasecenter='J2000 17h47m20.163 -28d23m04.680',
-           cell='0.01arcsec',
-           niter=1000,
+           niter=10000,
            threshold='1mJy',
            robust=0.5,
-           gridder='awproject',
-           conjbeams=True,
-           deconvolver='multiscale',
+           gridder='mosaic',
+           scales=[0,3,9],
+           deconvolver='mtmfs',
            specmode='mfs',
-           nterms=1,
+           nterms=2,
            weighting='briggs',
            pblimit=0.2,
            interactive=False,
            outframe='LSRK',
            savemodel='none',
-           scales=[0,3,9],
            mask=mask,
           )
-    makefits(imagename, cleanup=False)
+    makefits(imagename)
+
+#too many vises
+# # make some smaller diagnostic images
+# msmd.open(selfcal_split_vis)
+# summary = msmd.summary()
+# msmd.close()
+# for spw in np.unique(summary['spectral windows']['names']):
+#     imagename = '18A-229_Q_M_selfcal_iter6_diagnostics_spw{0}'.format(spw)
+#     if not os.path.exists(imagename+".image.tt0.pbcor.fits"):
+#         tclean(vis=cont_vis,
+#                imagename=imagename,
+#                field="Sgr B2 NM Q,Sgr B2 MS Q",
+#                spw=spw,
+#                imsize=[500,500],
+#                phasecenter='J2000 17h47m20.163 -28d23m04.680',
+#                cell='0.01arcsec',
+#                niter=1000,
+#                threshold='1mJy',
+#                robust=0.5,
+#                gridder='awproject',
+#                conjbeams=True,
+#                deconvolver='multiscale',
+#                specmode='mfs',
+#                nterms=1,
+#                weighting='briggs',
+#                pblimit=0.2,
+#                interactive=False,
+#                outframe='LSRK',
+#                savemodel='none',
+#                scales=[0,3,9],
+#                mask=mask,
+#               )
+#         makefits(imagename, cleanup=False)
 
 # do a purely diagnostic ampcal
 diagnostic_ampcal_table = '18A-229_Q_concatenated_cal_iter6_ampcal_diagnostic.cal'
@@ -569,3 +572,87 @@ if not os.path.exists(diagnostic_ampcal_table):
               calmode='a',
               solnorm=True)
 
+
+
+
+"""
+Final step: apply the self-calibration to the other fields, then image them too
+"""
+
+
+
+full_selfcal_mses = {}
+for ms in fullpath_mses:
+    outms = ms[:-3]+"_fullsplit_for_selfcal_mergedates.ms"
+    if not os.path.exists(outms):
+        split(vis=ms, outputvis=outms,
+              datacolumn='corrected',
+              field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q")
+    msname = ms[16:21]
+    if msname == '03_06':
+        if 'T12' in ms:
+            msname = '03_06_T12'
+        else:
+            msname = '03_06_T01'
+
+    myprint(msname)
+    full_selfcal_mses[msname] = outms
+
+myprint(full_selfcal_mses)
+full_list_of_vis = list(full_selfcal_mses.values())
+
+
+allfields = 'Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q,Sgr B2 DS2 Q,Sgr B2 DS3 Q'
+imagename = '18A-229_Q_singlefield_selfcal_iter6'
+if not os.path.exists(imagename+'_Sgr_B2_DS3_Q_r0.5_allcont_clean1e4_1mJy.image.tt0.pbcor.fits'):
+    gainfield = 'Sgr B2 NM Q,Sgr B2 MS Q'
+    for field in allfields.split(","):
+        # apply the self-calibrations to the rest of the data
+        myapplycal(vis=full_list_of_vis, field=field, flagbackup=False, gainfield=[gainfield], interp=['linearperobs'],
+                   gaintable=[caltable], calwt=[False], applymode='calonly',
+                   antenna='*&*',
+                   #spwmap=[0]*nspw,
+                   parang=True,)
+
+
+# fullfield cleans: can't use mask w/ DS (but going to try anyway?)
+myclean(vis=full_list_of_vis,
+        fields=allfields.split(","),
+        name=imagename,
+        spws='', # even for indiv, we're dealing with cont splitted data...
+        niter=10000,
+        # mask doesn't work for Sgr B2 DS3 Q... mask=mask,
+        threshold='1mJy',
+        robust=0.5,
+        scales=[0,3,9],
+        savemodel='none', # don't want to selfcal any more...
+        noneg=False, # don't need to reject negative models
+       )
+
+
+imagename = '18A-229_Q_bigmosaic_selfcal_iter6'
+if not os.path.exists(imagename+".image.tt0.pbcor.fits"):
+    tclean(
+           vis=full_list_of_vis,
+           spw='',
+           field="Sgr B2 N Q,Sgr B2 NM Q,Sgr B2 MS Q,Sgr B2 S Q,Sgr B2 DS1 Q, Sgr B2 DS2 Q, Sgr B2 DS3 Q",
+           phasecenter='J2000 17h47m19.693 -28d23m11.527',
+           imsize=[9000,18000],
+           cell='0.02arcsec',
+           imagename=imagename,
+           niter=10000,
+           threshold='1mJy',
+           robust=0.5,
+           gridder='mosaic',
+           scales=[0,3,9],
+           deconvolver='mtmfs',
+           specmode='mfs',
+           nterms=2,
+           weighting='briggs',
+           pblimit=0.2,
+           interactive=False,
+           outframe='LSRK',
+           savemodel='none',
+           mask=mask,
+          )
+    makefits(imagename)
