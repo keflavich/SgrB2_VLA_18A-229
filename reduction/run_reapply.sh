@@ -17,4 +17,6 @@ echo ${WORK_DIR}
 export SCRIPT_DIR="/lustre/aginsbur/sgrb2/18A-229/reduction_scripts/"
 
 # casa's python requires a DISPLAY for matplot so create a virtual X server
-xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/reapply_pipeline_calibration.py')"
+#xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/reapply_pipeline_calibration.py')"
+xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/reapply_pipeline_calibration_K.py')"
+xvfb-run -d casa-prerelease --nogui --nologger -c "execfile('$SCRIPT_DIR/reapply_pipeline_calibration_Ka.py')"
