@@ -17,12 +17,14 @@ sys.path.append(os.getenv('SCRIPT_DIR'))
 from continuum_imaging_general import myclean, tclean, makefits
 from continuum_windows import Kmses
 
-from taskinit import casalog
+from taskinit import casalog, tbtool
 from flagdata_cli import flagdata_cli as flagdata
 from applycal_cli import applycal_cli as applycal
 from split_cli import split_cli as split
 
-field_names = ['Sgr B2 SDS K', 'Sgr B2 MN K']
+tb = tbtool()
+
+field_names = ['Sgr B2 SDS K', 'Sgr B2 MN K', 'Sgr B2 MS K']
 
 cwd = os.getcwd()
 assert cwd == "/lustre/aginsbur/sgrb2/18A-229"
@@ -34,10 +36,11 @@ def logprint(string):
 for dir in glob.glob("18A-229*"):
     os.chdir(dir)
 
-    avgphasegain = glob.glob("*.ms.averagephasegain.g")
-    assert len(avgphasegain) == 1
+    #avgphasegain = glob.glob("*.ms.averagephasegain.g")
+    #assert len(avgphasegain) == 1,"No averagephasegain in {0}".format(dir)
+    ms = glob.glob("18*.ms")[0]
 
-    ms = avgphasegain[0][:-19]
+    #ms = avgphasegain[0][:-19]
     fullpathms = os.path.join(dir, ms)
 
     if os.path.exists('done_recalibrating_{0}'.format(ms)):
@@ -74,41 +77,27 @@ for dir in glob.glob("18A-229*"):
             os.chdir(cwd)
             continue
 
-    def find_file(globstr):
-        result = glob.glob(globstr)
-        if len(result) != 1:
-            raise ValueError("Found wrong # of tbls: {0} from {1} in {2}"
-                             .format(result, globstr, dir))
-        return result[0]
+    #def find_file(globstr):
+    #    result = glob.glob(globstr)
+    #    if len(result) != 1:
+    #        return None
+    #        raise ValueError("Found wrong # of tbls: {0} from {1} in {2}"
+    #                         .format(result, globstr, dir))
+    #    return result[0]
 
-    gc_tbl = find_file("*_3.gc.tbl")
-    opac_tbl = find_file("*_4.opac.tbl")
-    rq_tbl = find_file('*_5.rq.tbl')
-    try:
-        ants_tbl = find_file('*_7.ants.tbl')
-        gaintables = [gc_tbl,
-                      opac_tbl,
-                      rq_tbl,
-                      ants_tbl,
-                      ms+'.finaldelay.k',
-                      ms+'.finalBPcal.b',
-                      ms+'.averagephasegain.g',
-                      ms+'.finalampgaincal.g',
-                      ms+'.finalphasegaincal.g']
-    except ValueError:
-        gaintables = [gc_tbl,
-                      opac_tbl,
-                      rq_tbl,
-                      ms+'.finaldelay.k',
-                      ms+'.finalBPcal.b',
-                      ms+'.averagephasegain.g',
-                      ms+'.finalampgaincal.g',
-                      ms+'.finalphasegaincal.g']
-    try:
-        swpow_tbl = find_file("*_6.swpow.tbl")
-        gaintables.insert(3, swpow_tbl)
-    except ValueError:
-        pass
+    #gaintables = [find_file(tbl) for tbl in ("*.gc.tbl", "*.opac.tbl",
+    #                                         "*.rq.tbl", "*.swpow.tbl",
+    #                                         "*.ants.tbl",
+    #                                         "*.finaldelay.tbl",
+    #                                         "*.finaldelayinitialgain.tbl",
+    #                                         "*.finalBPinitialgain.tbl",
+    #                                         "*.finalBPcal.tbl",
+    #                                         "*.averagephasegain.tbl",
+    #                                         "*.phaseshortgaincal.tbl",
+    #                                         "*.finalampgaincal.tbl",
+    #                                         "*.finalphasegaincal.tbl",)]
+    #gaintables = [x for x in gaintables if x is not None]
+    gaintables = glob.glob("*hifv_finalcals*.tbl")
 
 
     ntables = len(gaintables)
@@ -144,10 +133,18 @@ for dir in glob.glob("18A-229*"):
     #flagdata(vis=ms, mode='manual',
     #         spw='44054800170~44084179830Hz:44054800170~44084179830Hz')
 
+    tb.open(ms)
+    if 'CORRECTED_DATA' in tb.colnames():
+        datacolumn='corrected'
+    else:
+        datacolumn='data'
+    tb.close()
+
     split(vis=ms,
           outputvis=cont_ms,
           field=",".join(field_names),
           width=16,
+          datacolumn=datacolumn,
           spw=Kmses[fullpathms],
          )
 
