@@ -38,7 +38,7 @@ for dir in glob.glob("18A-229*"):
 
     #avgphasegain = glob.glob("*.ms.averagephasegain.g")
     #assert len(avgphasegain) == 1,"No averagephasegain in {0}".format(dir)
-    ms = glob.glob("18*.ms")[0]
+    ms = [x for x in glob.glob("18*.ms") if 'continuum' not in x][0]
 
     #ms = avgphasegain[0][:-19]
     fullpathms = os.path.join(dir, ms)
@@ -57,6 +57,8 @@ for dir in glob.glob("18A-229*"):
         logprint("Skipping {0} because it's actively being worked on.".format(ms))
         os.chdir(cwd)
         continue
+
+    logprint("Working on {0}".format(ms))
 
     with open('WORKING', 'w') as fh:
         fh.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
@@ -103,8 +105,8 @@ for dir in glob.glob("18A-229*"):
     ntables = len(gaintables)
     gainfield = [''] * ntables
     spwmap = [[]] * ntables
-    interp = ['linear,nearestflag' if 'finalBPcal' in tb else ''
-              for tb in gaintables]
+    interp = ['linear,nearestflag' if 'finalBPcal' in tbname else ''
+              for tbname in gaintables]
     calwt = [False] * ntables
 
     logprint("Calibrating {0} / {1}".format(dir, ms))
@@ -153,7 +155,8 @@ for dir in glob.glob("18A-229*"):
     #         spw='44054800170~44084179830Hz:44054800170~44084179830Hz')
 
     with open('done_recalibrating_{0}'.format(ms), 'w') as fh:
-        fh.write("cont_ms={0}, ms={1}".format(cont_ms, ms))
+        fh.write(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "\n")
+        fh.write("cont_ms={0}, ms={1}".format(cont_ms, ms) + "\n")
 
     os.remove('WORKING')
 

@@ -112,8 +112,8 @@ for dir in glob.glob("18A-229*"):
     ntables = len(gaintables)
     gainfield = [''] * ntables
     spwmap = [[]] * ntables
-    interp = ['linear,nearestflag' if 'finalBPcal' in tb else ''
-              for tb in gaintables]
+    interp = ['linear,nearestflag' if 'finalBPcal' in tbname else ''
+              for tbname in gaintables]
     calwt = [False] * ntables
 
     logprint("Calibrating {0} / {1}".format(dir, ms))
