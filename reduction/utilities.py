@@ -18,8 +18,8 @@ def id_spw(vis, freq, min_chan=255):
     raise ValueError("No match for frequency {0} found in {1}"
                      .format(freq, vis))
 
-def id_spws(vislist, freq):
-    return ",".join([str(id_spw(ms, freq)) for ms in vislist])
+def id_spws(vislist, freq, min_chan=255):
+    return ",".join([str(id_spw(ms, freq, min_chan=min_chan)) for ms in vislist])
 
 
 def get_spw_mapping(vis, caltable):

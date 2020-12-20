@@ -36,7 +36,7 @@ def myclean(
     spws,
     imsize=2000,
     cell='0.04arcsec',
-    fields=["Sgr B2 N Q", "Sgr B2 NM Q", "Sgr B2 MS Q"],
+    fields=["Sgr B2 NM Q", "Sgr B2 MS Q", "Sgr B2 N Q", ],
     phasecenters=None,
     niter=1000,
     threshold='25mJy',
@@ -120,6 +120,7 @@ def ch3ohthermalclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='CH3OH48.4', spws=spws, chanchunks=8, **kwargs)
 
 def csclean(vis, name, **kwargs):
+    spws = id_spws(vis, freq=48.990955e9)
     return myclean(vis=vis, name=name, linename='CS1-0', spws="26", chanchunks=8, **kwargs)
 
 

@@ -23,7 +23,7 @@ from ms_lists import Qmses, Kamses, Kmses
 #siov2clean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
 #ch3ohmaserclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
 #ch3ohthermalclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
-#csclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
+csclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25Jy', niter=0)
 
 #ch3ohmaserclean(['../'+x for x in mses], name='18A-229_combined', threshold='25mJy',
 #                fields=["Sgr B2 S Q", "Sgr B2 DS1 Q", "Sgr B2 DS2 Q", "Sgr B2 DS3 Q",])
