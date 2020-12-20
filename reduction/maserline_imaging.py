@@ -120,8 +120,10 @@ def ch3ohthermalclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, linename='CH3OH48.4', spws=spws, chanchunks=8, **kwargs)
 
 def csclean(vis, name, **kwargs):
-    spws = id_spws(vis, freq=48.990955e9)
-    return myclean(vis=vis, name=name, linename='CS1-0', spws="26", chanchunks=8, **kwargs)
+    restfreq = 48.990955e9
+    spws = id_spws(vis, freq=restfreq, min_chan=120)
+    return myclean(vis=vis, name=name, restfreq='{0}Hz'.format(restfreq),
+                   linename='CS1-0', spws=spws, chanchunks=8, **kwargs)
 
 
 # Ka-band
