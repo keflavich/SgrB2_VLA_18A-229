@@ -9,9 +9,15 @@ sys.path.append('.')
 
 from utilities import id_spws, id_spw
 
-from tclean_cli import tclean_cli as tclean
-from impbcor_cli import impbcor_cli as impbcor
-from exportfits_cli import exportfits_cli as exportfits
+try:
+    from tclean_cli import tclean_cli as tclean
+    from impbcor_cli import impbcor_cli as impbcor
+    from exportfits_cli import exportfits_cli as exportfits
+except:
+    import casatasks as ct
+    tclean = ct.tclean
+    impbcor = ct.impbcor
+    exportfits = ct.exportfits
 
 
 def makefits(myimagebase, cleanup=True):

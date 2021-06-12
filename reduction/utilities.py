@@ -1,7 +1,11 @@
-from taskinit import casac, tbtool
 import numpy as np
 
-tb = tbtool()
+try:
+    from taskinit import casac, tbtool
+    tb = tbtool()
+except (ModuleNotFoundError,ImportError):
+    from casatools import table
+    tb = table()
 
 def id_spw(vis, freq, min_chan=255):
     tb.open(vis+"/SPECTRAL_WINDOW")

@@ -2,6 +2,7 @@
 Script to create merged images of the masers and other lines
 """
 import sys
+import os
 sys.path.append('.')
 assert os.getenv('SCRIPT_DIR') is not None
 sys.path.append(os.getenv('SCRIPT_DIR'))
@@ -23,7 +24,7 @@ from ms_lists import Qmses, Kamses, Kmses
 #siov2clean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
 #ch3ohmaserclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
 #ch3ohthermalclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25mJy')
-csclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25Jy', niter=0)
+#csclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25Jy', niter=0)
 
 #ch3ohmaserclean(['../'+x for x in mses], name='18A-229_combined', threshold='25mJy',
 #                fields=["Sgr B2 S Q", "Sgr B2 DS1 Q", "Sgr B2 DS2 Q", "Sgr B2 DS3 Q",])
@@ -36,15 +37,15 @@ csclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25Jy', nit
 
 
 
-#ch3ohKamaserclean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#so10clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31918clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31212clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31313clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31414clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31817clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31716clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
-#nh31615clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+ch3ohKamaserclean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+so10clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31918clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31212clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31313clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31414clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31817clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31716clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
+nh31615clean(['../'+x for x in Kamses], name='18A-229_combined', threshold='25mJy')
 
 
 #nh322clean(['../'+x for x in Kmses], name='18A-229_combined_zoom', threshold='25mJy',
@@ -59,13 +60,13 @@ csclean(['../'+x for x in Qmses], name='18A-229_combined', threshold='25Jy', nit
 #          )
 
 #h2oclean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh322clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh311clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh321clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh332clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh344clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh355clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh377clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh353clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh354clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
-nh365clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh322clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh311clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh321clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh332clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh344clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh355clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh377clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh353clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh354clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
+#nh365clean(['../'+x for x in Kmses], name='18A-229_combined', threshold='25mJy')
