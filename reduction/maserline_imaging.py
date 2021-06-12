@@ -131,6 +131,10 @@ def csclean(vis, name, **kwargs):
     return myclean(vis=vis, name=name, restfreq='{0}Hz'.format(restfreq),
                    linename='CS1-0', spws=spws, chanchunks=8, **kwargs)
 
+def csclean2(vis, name, **kwargs):
+    spws = id_spws(vis, freq=48.990955e9)
+    return myclean(vis=vis, name=name, linename='CS1-0', spws="26", chanchunks=8, **kwargs)
+
 
 # Ka-band
 def ch3ohKamaserclean(vis, name, **kwargs):
@@ -159,15 +163,29 @@ def nh31313clean(vis, name, **kwargs):
 
 
 def nh31615clean(vis, name, **kwargs):
-    return myclean(vis=vis, name=name, linename='NH3_1615', spws="61",
+    if isinstance(vis, list):
+        spws = id_spws(vis, freq=30.5374030e9)
+    else:
+        spws = "61"
+    return myclean(vis=vis, name=name, linename='NH3_1615', spws=spws,
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
 
 def nh31716clean(vis, name, **kwargs):
-    return myclean(vis=vis, name=name, linename='NH3_1716', spws="42",
+    freq = 32.21930000e9
+    if isinstance(vis, list):
+        spws = id_spws(vis, freq=freq)
+    else:
+        spws = "42"
+    return myclean(vis=vis, name=name, linename='NH3_1716', spws=spws,
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
 
 def nh31817clean(vis, name, **kwargs):
-    return myclean(vis=vis, name=name, linename='NH3_1817', spws="26",
+    freq = 34.12805000
+    if isinstance(vis, list):
+        spws = id_spws(vis, freq=freq)
+    else:
+        spws = "26"
+    return myclean(vis=vis, name=name, linename='NH3_1817', spws=spws,
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
 
 
