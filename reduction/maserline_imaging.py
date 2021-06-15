@@ -164,8 +164,10 @@ def nh31313clean(vis, name, **kwargs):
 
 def nh31615clean(vis, name, **kwargs):
     if isinstance(vis, list):
-        spws = id_spws(vis, freq=30.5374030e9)
+        # make spws a list too
+        spws = id_spws(vis, freq=30.5374030e9).split(",")
     else:
+        raise ValueError("Give a list")
         spws = "61"
     return myclean(vis=vis, name=name, linename='NH3_1615', spws=spws,
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
@@ -173,16 +175,18 @@ def nh31615clean(vis, name, **kwargs):
 def nh31716clean(vis, name, **kwargs):
     freq = 32.21930000e9
     if isinstance(vis, list):
-        spws = id_spws(vis, freq=freq)
+        spws = id_spws(vis, freq=freq).split(",")
     else:
         spws = "42"
     return myclean(vis=vis, name=name, linename='NH3_1716', spws=spws,
                    fields=['Sgr B2 MN Ka', 'Sgr B2 MS Ka'], **kwargs)
 
 def nh31817clean(vis, name, **kwargs):
-    freq = 34.12805000
+    # exclude spw w/o data
+    #vis = [v for v in vis if '530614965275' not in v and '54285351852' not in v]
+    freq = 34.12805000e9
     if isinstance(vis, list):
-        spws = id_spws(vis, freq=freq)
+        spws = id_spws(vis, freq=freq).split(",")
     else:
         spws = "26"
     return myclean(vis=vis, name=name, linename='NH3_1817', spws=spws,
